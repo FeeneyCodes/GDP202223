@@ -19,7 +19,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="someFunctions.cpp" />
+    <ClCompile Include="SomeMoreCode.cpp" />
     <ClCompile Include="theMain.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="myExcitingFunctions.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
