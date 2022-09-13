@@ -2,28 +2,108 @@
 #include <string>
 //#include <fstream>
 //#include <sstream>
+#include <vector>
 
 #include "myExcitingFunctions.h"
 
+//float AddSomeNumbers(float myArray[], int arraysize)
+float AddSomeNumbers(int arraysize, float* pMyArray)
+{
+	// 
+//	int myGiantArray[2'000'000]			// Stack
+	//int* pMyArray = new int[2'000'000];		// Heap
+
+//	int* pX = new int();
+
+	int theArraySize = sizeof(pMyArray);
+
+	float sum = 0.0f;
+	for (int index = 0; index != arraysize; index++)
+	{
+		sum += pMyArray[index];
+	}
+	return sum;
+}
+
+class cPerson
+{
+	int x = 0;
+	float x;// = 0.0f;	// C++11 
+};
+//
+//std::string name = "Michael";
+//std::string name[] = { "M", "i", "c",....
 
 int main( int argc, char* argv[] )
+//int main( int argc, char** argv )
 {
+//	std::string name = "Michael";
+	char name[] = "Michael";
+//	char* name;
+	//std::string name[] = { "M", "i", "c",....
+	std::cout << name[3] << std::endl;
+
+
+	for (int index = 0; index != argc; index++)
+	{
+		std::cout << index << ":" << argv[index] << std::endl;
+	}
+
 //	unsigned int index = 99;
 //	std::string names[10];
 //	std::string hey = "hey";
 //	int garbage[1000] = { 0 };
 //	names[index] = "michael";
 
-	float myArray[3];
-	myArray[0] = 4.5f;
-	myArray[1] = 3.42f;
-	myArray[2] = 2.0f;
-//	float total = AddSomeNumbers( ? ? ? );
+	// ON THE STACK
+	int myGiantArray[2'000] = { 0 };
+//	int myGiantArray[2'000'000] = { 0 };
+
+	int x;		
+	x = 9;
+	int x = 9;
+
+	// Same as 	int x = 9;
+	int* pX = new int();	// Same as "int x;"
+	*pX = 9;				// int x = 9;
+
+	delete pX;
+	
+	// 0 nullptr
+	// int myGiantArray[2'000'000]			// Stack
+	int* pMyArray = new int[2'000'000];		// Heap
+
+	myGiantArray[828] = 3;
+	pMyArray[828] = 3;
+
+	delete [] pMyArray;		// Note the syntax
+
+
+	const int ARRAYSIZE = 10;
+	float myArray[ARRAYSIZE];			// 4 bytes
+	for ( int index = 0; index != ARRAYSIZE; index++)
+	{
+		myArray[index] = ((float)rand())/100.0f;
+	}
+
+	int theArraySize = sizeof(myArray);
+
+	myArray[0] = 4.5f; 	myArray[1] = 3.42f; myArray[2] = 2.0f;
+	float total = AddSomeNumbers(ARRAYSIZE, myArray);
 
 	float y = 4.5f;
-	float x = 3.42f;
+	float x1 = 3.42f;
 	float a = 2.0f;
-	std::cout << AddSomeNumbers(x, y, a);
+	std::cout << AddSomeNumbers(x1, y, a);
+
+
+	//std::cout << AddSomeNumbers<double>(x, y, a);
+	//std::cout << AddSomeNumbers<float>(x, y, a);
+	//cNinjaTurtle t1, t2, t3;
+	//std::cout << AddSomeNumbers<cNinjaTurtle>(t1, t2, t3);
+	//std::cout << t1;
+
+
 
 //	std::cout << "Hello GDP'er!" << std::endl;
 //
