@@ -6,6 +6,11 @@
 
 #include "myExcitingFunctions.h"
 
+#include "../MichaelCrappyOpenGL/MichaelsCrappyOpenGL.h"
+
+#include <Windows.h>
+
+
 //float AddSomeNumbers(float myArray[], int arraysize)
 float AddSomeNumbers(int arraysize, float* pMyArray)
 {
@@ -27,8 +32,8 @@ float AddSomeNumbers(int arraysize, float* pMyArray)
 
 class cPerson
 {
-	int x = 0;
-	float x;// = 0.0f;	// C++11 
+	int x;// = 0;
+	float y;// = 0.0f;	// C++11 
 };
 //
 //std::string name = "Michael";
@@ -37,6 +42,21 @@ class cPerson
 int main( int argc, char* argv[] )
 //int main( int argc, char** argv )
 {
+//	glDoThat();
+
+
+//	FARPROC GetProcAddress(
+//		[in] HMODULE hModule,
+//		[in] LPCSTR  lpProcName
+//	);
+	FARPROC pMsgBoxFunction = GetProcAddress(NULL, "MessageBoxW");
+	FARPROC p_glCompileShader = GetProcAddress(NULL, "glCompileShader");
+
+	MessageBox(NULL, L"HEY!", L"what's up?", MB_OK);
+	pMsgBoxFunction(NULL, L"HEY!", L"what's up?");
+
+	p_glCompileShader(3);
+
 //	std::string name = "Michael";
 	char name[] = "Michael";
 //	char* name;
@@ -61,7 +81,7 @@ int main( int argc, char* argv[] )
 
 	int x;		
 	x = 9;
-	int x = 9;
+	int x1 = 9;
 
 	// Same as 	int x = 9;
 	int* pX = new int();	// Same as "int x;"
@@ -92,9 +112,9 @@ int main( int argc, char* argv[] )
 	float total = AddSomeNumbers(ARRAYSIZE, myArray);
 
 	float y = 4.5f;
-	float x1 = 3.42f;
+	float x2 = 3.42f;
 	float a = 2.0f;
-	std::cout << AddSomeNumbers(x1, y, a);
+	std::cout << AddSomeNumbers(x2, y, a);
 
 
 	//std::cout << AddSomeNumbers<double>(x, y, a);

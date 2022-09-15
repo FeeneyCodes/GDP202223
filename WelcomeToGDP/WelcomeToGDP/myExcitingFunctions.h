@@ -36,3 +36,7 @@ float AddSomeNumbers(float a1, float a2, float a3);
 //}
 
 float AndAddTheseFunctions(float a, float b, float c);
+
+// Michael's pretend OpenGL functions
+void glDoThis(int numVertices);
+void glDoThat();
