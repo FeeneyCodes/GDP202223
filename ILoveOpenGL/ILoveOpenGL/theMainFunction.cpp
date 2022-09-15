@@ -3,7 +3,14 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
-#include "linmath.h"
+//#include "linmath.h"
+#include <glm/glm.hpp>
+#include <glm/vec3.hpp> // glm::vec3        (x,y,z)
+#include <glm/vec4.hpp> // glm::vec4        (x,y,z,w)
+#include <glm/mat4x4.hpp> // glm::mat4
+// glm::translate, glm::rotate, glm::scale, glm::perspective
+#include <glm/gtc/matrix_transform.hpp> 
+#include <glm/gtc/type_ptr.hpp> // glm::value_ptr
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -74,7 +81,8 @@ int main(void)
     glfwSetKeyCallback(window, key_callback);
 
     glfwMakeContextCurrent(window);
-    gladLoadGL(glfwGetProcAddress);
+ //   gladLoadGL( (GLADloadproc)glfwGetProcAddress );
+    gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
     glfwSwapInterval(1);
 
     // NOTE: OpenGL error checks have been omitted for brevity
@@ -111,7 +119,8 @@ int main(void)
     {
         float ratio;
         int width, height;
-        mat4x4 m, p, mvp;
+//        mat4x4 m, p, mvp;
+        glm::mat4x4 m, p, mvp;
 
         glfwGetFramebufferSize(window, &width, &height);
         ratio = width / (float)height;
@@ -119,13 +128,32 @@ int main(void)
         glViewport(0, 0, width, height);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        mat4x4_identity(m);
-        mat4x4_rotate_Z(m, m, (float)glfwGetTime());
-        mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
-        mat4x4_mul(mvp, p, m);
+        // Make an "identity matrix"
+ //       mat4x4_identity(m);
+        m = glm::mat4x4(1.0f);  // identity matrix
+
+//        mat4x4_rotate_Z(m, m, (float)glfwGetTime());
+//        mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
+        p = glm::perspective(0.6f,
+                             ratio,
+                             0.1f,
+                             1000.0f);
+
+        glm::mat4x4 v = glm::mat4(1.0f);
+
+        glm::vec3 cameraEye = glm::vec3(0.0, 0.0, -4.0f);
+        glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
+        glm::vec3 upVector = glm::vec3(0.0f, 1.0f, 0.0f);
+
+        v = glm::lookAt(cameraEye,
+                        cameraTarget,
+                        upVector);
+
+//        mat4x4_mul(mvp, p, m);
+        mvp = p * v * m; 
 
         glUseProgram(program);
-        glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*)mvp);
+        glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(mvp));
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
         glfwSwapBuffers(window);
