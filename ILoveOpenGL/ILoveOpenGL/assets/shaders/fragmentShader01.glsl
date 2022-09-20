@@ -1,12 +1,12 @@
 //Fragment shader
-#version 110
+#version 420
 
-varying vec3 colour;
+in vec3 colour;			// varying
 
 void main()
 {
 	vec3 finalColour = colour;
-	finalColour.r = 1.0;
+	finalColour.r = 1.0f;
 	
-	gl_FragColor = vec4(finalColour, 1.0);
+	gl_FragColor = vec4(finalColour, 1.0f);
 }

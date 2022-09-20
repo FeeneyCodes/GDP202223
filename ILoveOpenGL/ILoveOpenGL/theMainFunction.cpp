@@ -15,7 +15,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream>
-#include <fstream>
+#include <fstream>  // File streaming thing (like cin, etc.)
 #include <sstream>  // "string builder" type thing
 
 #include "cShaderManager.h"
@@ -125,8 +125,33 @@ float RandomFloat(float a, float b) {
     return a + r;
 }
 
+
+void LoadTheFile()
+{
+    std::ifstream theFile("assets/models/bun_zipper_xyz.ply");
+    if ( ! theFile.is_open() )
+    {
+        std::cout << "Didn't open it!" << std::endl;
+        return;
+    }
+
+    std::string theNextToken;
+    while ( theFile >> theNextToken )
+    {
+        // Do something with the data
+        std::cout << theNextToken << std::endl;
+    }
+
+    theFile.close();
+
+    return;
+}
+
+
 int main(void)
 {
+    LoadTheFile();
+
     // Create a bunch of random triangles
     for ( unsigned int index = 0; index != NUMBER_OF_VERTICES; index++ )
     {
