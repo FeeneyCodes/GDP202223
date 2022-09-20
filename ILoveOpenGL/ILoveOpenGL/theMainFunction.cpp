@@ -1,7 +1,7 @@
-#include <glad/glad.h>
-
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
+//#include <glad/glad.h>
+//#define GLFW_INCLUDE_NONE
+//#include <GLFW/glfw3.h>
+#include "globalOpenGL.h"
 
 //#include "linmath.h"
 #include <glm/glm.hpp>
@@ -17,6 +17,9 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>  // "string builder" type thing
+
+#include "cShaderManager.h"
+
 
 struct sVertex_XY_RGB
 {
@@ -40,29 +43,29 @@ const unsigned int NUMBER_OF_VERTICES = 100;
 
 sVertex_XY_RGB* vertices = new sVertex_XY_RGB[NUMBER_OF_VERTICES];
 
-glm::vec3 g_cameraEye = glm::vec3(0.0, 0.0, -4.0f);
+glm::vec3 g_cameraEye = glm::vec3(0.0, 0.0, -200.0f);
 glm::vec3 g_cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
 
 
-static const char* vertex_shader_text =
-"#version 110\n"
-"uniform mat4 MVP;\n"
-"attribute vec3 vCol;\n"
-"attribute vec3 vPos;\n"
-"varying vec3 color;\n"
-"void main()\n"
-"{\n"
-"    gl_Position = MVP * vec4(vPos, 1.0);\n"
-"    color = vCol;\n"
-"}\n";
-
-static const char* fragment_shader_text =
-"#version 110\n"
-"varying vec3 color;\n"
-"void main()\n"
-"{\n"
-"    gl_FragColor = vec4(color, 1.0);\n"
-"}\n";
+//static const char* vertex_shader_text =
+//"#version 110\n"
+//"uniform mat4 MVP;\n"
+//"attribute vec3 vCol;\n"
+//"attribute vec3 vPos;\n"
+//"varying vec3 color;\n"
+//"void main()\n"
+//"{\n"
+//"    gl_Position = MVP * vec4(vPos, 1.0);\n"
+//"    color = vCol;\n"
+//"}\n";
+//
+//static const char* fragment_shader_text =
+//"#version 110\n"
+//"varying vec3 color;\n"
+//"void main()\n"
+//"{\n"
+//"    gl_FragColor = vec4(color, 1.0);\n"
+//"}\n";
 
 static void error_callback(int error, const char* description)
 {
@@ -114,6 +117,7 @@ static void key_callback(GLFWwindow* window,
 
 }
 // From here: https://stackoverflow.com/questions/5289613/generate-random-float-between-two-floats/5289624
+
 float RandomFloat(float a, float b) {
     float random = ((float)rand()) / (float)RAND_MAX;
     float diff = b - a;
@@ -138,8 +142,16 @@ int main(void)
     std::cout << "starting up..." << std::endl;
 
     GLFWwindow* window;
-    GLuint vertex_buffer, vertex_shader, fragment_shader, program;
-    GLint mvp_location, vpos_location, vcol_location;
+    GLuint vertex_buffer = 0;
+//    GLuint vertex_shader = 0;
+//    GLuint fragment_shader = 0;
+//    GLuint program = 0;
+
+    GLuint shaderID = 0;
+
+    GLint mvp_location = 0;
+    GLint vpos_location = 0;
+    GLint vcol_location = 0;
 
     glfwSetErrorCallback(error_callback);
 
@@ -166,32 +178,73 @@ int main(void)
     glfwSwapInterval(1);
 
     // NOTE: OpenGL error checks have been omitted for brevity
+    //int x = 9;              // Location 7363
+    //int* px = &x;           // px = 7363
+    //int* pX1 = &x;          // px1 = 7363
+    //void* pZ = &x;         
+    //pZ = RandomFloat;
+
+    //std::cout << pZ; 
+
 
     // Defining the 3D model that we are going to draw. 
     glGenBuffers(1, &vertex_buffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices) * NUMBER_OF_VERTICES, vertices, GL_STATIC_DRAW);
+    unsigned int vertexBufferSizeInBytes = sizeof(vertices) * NUMBER_OF_VERTICES;
+    glBufferData(GL_ARRAY_BUFFER, 
+                 vertexBufferSizeInBytes, 
+                 vertices,              // (void*)
+                 GL_STATIC_DRAW);
 //    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
+    // Create a shader thingy
+    cShaderManager* pTheShaderManager = new cShaderManager();
+
+    cShaderManager::cShader vertexShader01;
+    cShaderManager::cShader fragmentShader01;
+
+    vertexShader01.fileName = "assets/shaders/vertexShader01.glsl";
+    fragmentShader01.fileName = "assets/shaders/fragmentShader01.glsl";
+
+    if ( ! pTheShaderManager->createProgramFromFile("Shader_1", vertexShader01, fragmentShader01) )
+    {
+        std::cout << "Didn't compile shaders" << std::endl;
+        std::string theLastError = pTheShaderManager->getLastError();
+        std::cout << "Because: " << theLastError << std::endl;
+        return -1;
+    }
+    else 
+    {
+        std::cout << "Compiled shader OK." << std::endl;
+    }
+
+    pTheShaderManager->useShaderProgram("Shader_1");
+
+    shaderID = pTheShaderManager->getIDFromFriendlyName("Shader_1");
+
+    glUseProgram(shaderID);
+
     // Shader setup
-    vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertex_shader, 1, &vertex_shader_text, NULL);
-    glCompileShader(vertex_shader);
-
-    fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragment_shader, 1, &fragment_shader_text, NULL);
-    glCompileShader(fragment_shader);
-
-    program = glCreateProgram();
-
-    glAttachShader(program, vertex_shader);
-    glAttachShader(program, fragment_shader);
-
-    glLinkProgram(program);
+//    vertex_shader = glCreateShader(GL_VERTEX_SHADER);
+//    glShaderSource(vertex_shader, 1, &vertex_shader_text, NULL);
+//    glCompileShader(vertex_shader);
+// 
+//    fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+//    glShaderSource(fragment_shader, 1, &fragment_shader_text, NULL);
+//    glCompileShader(fragment_shader);
+//
+//    program = glCreateProgram();
+//
+//    glAttachShader(program, vertex_shader);
+//    glAttachShader(program, fragment_shader);
+//
+//    glLinkProgram(program);
+//
+//    glUseProgram(program);
 
     // Vertex layout
-    vpos_location = glGetAttribLocation(program, "vPos");   // Vertex Position
-    vcol_location = glGetAttribLocation(program, "vCol");
+    vpos_location = glGetAttribLocation(shaderID, "vPos");   // Vertex Position
+    vcol_location = glGetAttribLocation(shaderID, "vCol");
 
     glEnableVertexAttribArray(vpos_location);
     glVertexAttribPointer(vpos_location,
@@ -210,7 +263,7 @@ int main(void)
                           (void*) offsetof(sVertex_XY_RGB, r)); //  (sizeof(float) * 3));
 
 
-    mvp_location = glGetUniformLocation(program, "MVP");
+    mvp_location = glGetUniformLocation(shaderID, "MVP");       // program
 
 
     while ( ! glfwWindowShouldClose(window) )
@@ -251,13 +304,13 @@ int main(void)
         mvp = p * v * m; 
 
 
-        glUseProgram(program);
+        //glUseProgram(program);
 
         glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(mvp));
 
         glPointSize(15.0f);
         glDrawArrays(GL_TRIANGLES, 0, NUMBER_OF_VERTICES);
-//        glDrawArrays(GL_TRIANGLES, 0, 6);
+//        glDrawArrays(GL_TRIANGLES, 0, 3);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -279,6 +332,9 @@ int main(void)
         //glfwSetWindowTitle(window, ssTitle.str().c_str() );
 
     }
+
+    // Get rid of stuff
+    delete pTheShaderManager;
 
     glfwDestroyWindow(window);
 
