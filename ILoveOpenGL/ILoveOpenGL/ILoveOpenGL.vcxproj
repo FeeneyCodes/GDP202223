@@ -144,6 +144,7 @@
     <ClCompile Include="theMainFunction.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="cMeshObject.h" />
     <ClInclude Include="cShaderManager.h" />
     <ClInclude Include="cVAOManager\cVAOManager.h" />
     <ClInclude Include="globalOpenGL.h" />

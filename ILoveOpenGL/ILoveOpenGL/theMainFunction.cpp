@@ -21,43 +21,47 @@
 
 #include "cShaderManager.h"
 
+#include "cVAOManager/cVAOManager.h"
 
-struct sVertex_XYZ_RGB
-{
-    float x, y, z;             // 0 floats from the start
-    float r, g, b;          // 2 floats from the start
-                     // Each vertex is 5 floats in size
-};
 
-struct sVertex_XYZ_N_RGBA_UV
-{
-    float x, y, z;
-    float nx, ny, nz;
-    //uchar red, green, blue, alpha;
-    float red, green, blue, alpha;
-    float texture_u, texture_v;
-};
-
-struct sTrianglePLY
-{
-    // The 3 vertex index values from the ply file
-    unsigned int vertexIndices[3];
-};
-
-// The ply file info gets copied into one of these
-struct sPLYFileInfo
-{
-    // Array we will load into
-    sVertex_XYZ_N_RGBA_UV* pTheModelArray = NULL;   // NULL, 0, nullptr
-    sTrianglePLY* pTheModelTriangleArray = NULL;
-
-    unsigned int numberOfvertices = 0;
-    unsigned int numberOfTriangles = 0;
-
-    // This is the data we are copying to the GPU 
-    sVertex_XYZ_RGB* vertices = NULL;
-    unsigned int numberOfVerticesToDraw = 0;
-};
+// This is all now part of the VAO manager
+// 
+//struct sVertex_XYZ_RGB
+//{
+//    float x, y, z;             // 0 floats from the start
+//    float r, g, b;          // 2 floats from the start
+//                     // Each vertex is 5 floats in size
+//};
+//
+//struct sVertex_XYZ_N_RGBA_UV
+//{
+//    float x, y, z;
+//    float nx, ny, nz;
+//    //uchar red, green, blue, alpha;
+//    float red, green, blue, alpha;
+//    float texture_u, texture_v;
+//};
+//
+//struct sTrianglePLY
+//{
+//    // The 3 vertex index values from the ply file
+//    unsigned int vertexIndices[3];
+//};
+//
+//// The ply file info gets copied into one of these
+//struct sPLYFileInfo
+//{
+//    // Array we will load into
+//    sVertex_XYZ_N_RGBA_UV* pTheModelArray = NULL;   // NULL, 0, nullptr
+//    sTrianglePLY* pTheModelTriangleArray = NULL;
+//
+//    unsigned int numberOfvertices = 0;
+//    unsigned int numberOfTriangles = 0;
+//
+//    // This is the data we are copying to the GPU 
+//    sVertex_XYZ_RGB* vertices = NULL;
+//    unsigned int numberOfVerticesToDraw = 0;
+//};
 
 //sVertex_XYZ_RGB vertices[] =
 //{
@@ -160,11 +164,26 @@ float RandomFloat(float a, float b) {
 
 
 
-bool LoadTheFile(std::string filename, sPLYFileInfo &thePlyInfo)
+bool LoadTheFile(std::string filename, sModelDrawInfo &modelDrawInfo)
 {
+    struct sVertex_XYZ_N_RGBA_UV
+    {
+        float x, y, z;
+        float nx, ny, nz;
+        //uchar red, green, blue, alpha;
+        float red, green, blue, alpha;
+        float texture_u, texture_v;
+    };
+
+    struct sTrianglePLY
+    {
+        // The 3 vertex index values from the ply file
+        unsigned int vertexIndices[3];
+    };
+
     // Array we will load into
-//   sVertex_XYZ_N_RGBA_UV* pTheModelArray = NULL;   // NULL, 0, nullptr
-//   sTrianglePLY* pTheModelTriangleArray = NULL;
+   sVertex_XYZ_N_RGBA_UV* pTheModelArray = NULL;   // NULL, 0, nullptr
+   sTrianglePLY* pTheModelTriangleArray = NULL;
 //    unsigned int numberOfvertices = 0;
 //    unsigned int numberOfTriangles = 0;
 
@@ -192,7 +211,7 @@ bool LoadTheFile(std::string filename, sPLYFileInfo &thePlyInfo)
         }
     }
     // 
-    theFile >> thePlyInfo.numberOfvertices;
+    theFile >> modelDrawInfo.numberOfVertices;
 
     // Scan for the word "face"
     while (theFile >> theNextToken)
@@ -203,7 +222,7 @@ bool LoadTheFile(std::string filename, sPLYFileInfo &thePlyInfo)
         }
     }
     // 
-    theFile >> thePlyInfo.numberOfTriangles;
+    theFile >> modelDrawInfo.numberOfTriangles;
 
     // Scan for the word "end_header"
     while (theFile >> theNextToken)
@@ -217,26 +236,26 @@ bool LoadTheFile(std::string filename, sPLYFileInfo &thePlyInfo)
     // Now we load the vertices
     // -0.036872 0.127727 0.00440925 0.2438786 0.9638011 -0.1077533 127 127 127 255 0.337485 0.8899501
 
-    thePlyInfo.pTheModelArray = new sVertex_XYZ_N_RGBA_UV[thePlyInfo.numberOfvertices];
+    pTheModelArray = new sVertex_XYZ_N_RGBA_UV[modelDrawInfo.numberOfVertices];
 
     std::cout << "Loading";
-    for ( unsigned int count = 0; count != thePlyInfo.numberOfvertices; count++ )
+    for ( unsigned int count = 0; count != modelDrawInfo.numberOfVertices; count++ )
     {
-        theFile >> thePlyInfo.pTheModelArray[count].x;
-        theFile >> thePlyInfo.pTheModelArray[count].y;
-        theFile >> thePlyInfo.pTheModelArray[count].z;
+        theFile >> pTheModelArray[count].x;
+        theFile >> pTheModelArray[count].y;
+        theFile >> pTheModelArray[count].z;
 
-        theFile >> thePlyInfo.pTheModelArray[count].nx;
-        theFile >> thePlyInfo.pTheModelArray[count].ny;
-        theFile >> thePlyInfo.pTheModelArray[count].nz;
+        theFile >> pTheModelArray[count].nx;
+        theFile >> pTheModelArray[count].ny;
+        theFile >> pTheModelArray[count].nz;
 
-        theFile >> thePlyInfo.pTheModelArray[count].red;
-        theFile >> thePlyInfo.pTheModelArray[count].green;
-        theFile >> thePlyInfo.pTheModelArray[count].blue;
-        theFile >> thePlyInfo.pTheModelArray[count].alpha;
+        theFile >> pTheModelArray[count].red;
+        theFile >> pTheModelArray[count].green;
+        theFile >> pTheModelArray[count].blue;
+        theFile >> pTheModelArray[count].alpha;
 
-        theFile >> thePlyInfo.pTheModelArray[count].texture_u;
-        theFile >> thePlyInfo.pTheModelArray[count].texture_v;
+        theFile >> pTheModelArray[count].texture_u;
+        theFile >> pTheModelArray[count].texture_v;
 
         if ( count % 10000 == 0 )
         {
@@ -246,20 +265,56 @@ bool LoadTheFile(std::string filename, sPLYFileInfo &thePlyInfo)
     std::cout << "done" << std::endl;
 
     // Load the faces (or triangles)
-    thePlyInfo.pTheModelTriangleArray = new sTrianglePLY[thePlyInfo.numberOfTriangles];
+    pTheModelTriangleArray = new sTrianglePLY[modelDrawInfo.numberOfTriangles];
 
-    for ( unsigned int count = 0; count != thePlyInfo.numberOfTriangles; count++ )
+    for ( unsigned int count = 0; count != modelDrawInfo.numberOfTriangles; count++ )
     {
         // 3 15393 15394 15395 
         unsigned int discard = 0;
         theFile >> discard;
 
-        theFile >> thePlyInfo.pTheModelTriangleArray[count].vertexIndices[0];
-        theFile >> thePlyInfo.pTheModelTriangleArray[count].vertexIndices[1];
-        theFile >> thePlyInfo.pTheModelTriangleArray[count].vertexIndices[2];
+        theFile >> pTheModelTriangleArray[count].vertexIndices[0];
+        theFile >> pTheModelTriangleArray[count].vertexIndices[1];
+        theFile >> pTheModelTriangleArray[count].vertexIndices[2];
     }
 
     theFile.close();
+
+    modelDrawInfo.pVertices = new sVertex[modelDrawInfo.numberOfVertices];
+
+    // Now copy the information from the PLY infomation to the model draw info structure
+    for ( unsigned int index = 0; index != modelDrawInfo.numberOfVertices; index++ )
+    {
+        modelDrawInfo.pVertices[index].x = pTheModelArray[index].x;
+        modelDrawInfo.pVertices[index].y = pTheModelArray[index].y;
+        modelDrawInfo.pVertices[index].z = pTheModelArray[index].z;
+
+        modelDrawInfo.pVertices[index].r = pTheModelArray[index].red;
+        modelDrawInfo.pVertices[index].g = pTheModelArray[index].green;
+        modelDrawInfo.pVertices[index].b = pTheModelArray[index].blue;
+    }
+
+    modelDrawInfo.numberOfIndices = modelDrawInfo.numberOfTriangles * 3;
+
+    // This is the "index" (or element) buffer
+    modelDrawInfo.pIndices = new unsigned int[modelDrawInfo.numberOfIndices];
+
+    unsigned int vertex_element_index_index = 0;
+
+    for ( unsigned int triangleIndex = 0; triangleIndex != modelDrawInfo.numberOfTriangles; triangleIndex++ )
+    {
+        modelDrawInfo.pIndices[vertex_element_index_index + 0] = pTheModelTriangleArray[triangleIndex].vertexIndices[0];
+        modelDrawInfo.pIndices[vertex_element_index_index + 1] = pTheModelTriangleArray[triangleIndex].vertexIndices[1];
+        modelDrawInfo.pIndices[vertex_element_index_index + 2] = pTheModelTriangleArray[triangleIndex].vertexIndices[2];
+
+        // Each +1 of the triangle index moves the "vertex element index" by 3
+        // (3 vertices per triangle)
+        vertex_element_index_index += 3;
+    }
+
+    delete [] pTheModelArray;   
+    delete [] pTheModelTriangleArray;
+
 
     return true;
 }
@@ -267,22 +322,22 @@ bool LoadTheFile(std::string filename, sPLYFileInfo &thePlyInfo)
 
 int main(void)
 {
-    sPLYFileInfo thePlyInfo;
+//    sPLYFileInfo thePlyInfo;
 //    std::string fileToLoad = "assets/models/BirdOfPrey/BirdOfPrey_Exported.ply";
-    std::string fileToLoad = "assets/models/MOTO/Blender (load from OBJ export) - only Moto_xyz_n_rgba_uv.ply";
+//    std::string fileToLoad = "assets/models/MOTO/Blender (load from OBJ export) - only Moto_xyz_n_rgba_uv.ply";
 //    std::string fileToLoad = "assets/models/bunny/reconstruction/bun_zipper_res2_xyz_n_rgba_uv.ply";
-    if ( LoadTheFile(fileToLoad, thePlyInfo) )
-    {
-        std::cout << "Loaded the file OK" << std::endl;
-    }
-
-    sPLYFileInfo thePlyInfo_Motorcycle;
-    sPLYFileInfo thePlyInfo_BirdOfPrey;
-
-    sPLYFileInfo theModelsWeCanDraw[100];
-    std::vector<sPLYFileInfo> vecAllTheModelsWeCanDraw;
-
-
+//    if ( LoadTheFile(fileToLoad, thePlyInfo) )
+//    {
+//        std::cout << "Loaded the file OK" << std::endl;
+//    }
+//
+ //   sPLYFileInfo thePlyInfo_Motorcycle;
+ //   sPLYFileInfo thePlyInfo_BirdOfPrey;
+//
+//    sPLYFileInfo theModelsWeCanDraw[100];
+//    std::vector<sPLYFileInfo> vecAllTheModelsWeCanDraw;
+//
+//
     // Copy the file data I loaded into the array that the shader expects
 //    thePlyInfo.vertices = new sVertex_XYZ_RGB[thePlyInfo.numberOfvertices];
 //
@@ -296,49 +351,49 @@ int main(void)
 //        thePlyInfo.vertices[index].g = thePlyInfo.pTheModelArray[index].green;
 //        thePlyInfo.vertices[index].b = thePlyInfo.pTheModelArray[index].blue;
 //    }
-
-
-    // Vertices we want to DRAW is number of triangles * 3
-    unsigned int numVerticesToDraw = thePlyInfo.numberOfTriangles * 3;
-    thePlyInfo.vertices = new sVertex_XYZ_RGB[numVerticesToDraw];
-
-    unsigned int vertexIndex = 0;
-    for ( unsigned int triangleIndex = 0; triangleIndex != thePlyInfo.numberOfTriangles; triangleIndex++ )
-    {
-        // copy the 3 vertices form the trianle information, and look up the actual vertex
-
-        unsigned int vert0Index = thePlyInfo.pTheModelTriangleArray[triangleIndex].vertexIndices[0];
-
-        thePlyInfo.vertices[vertexIndex + 0].x = thePlyInfo.pTheModelArray[vert0Index].x;
-        thePlyInfo.vertices[vertexIndex + 0].y = thePlyInfo.pTheModelArray[vert0Index].y;
-        thePlyInfo.vertices[vertexIndex + 0].z = thePlyInfo.pTheModelArray[vert0Index].z;
-        thePlyInfo.vertices[vertexIndex + 0].r = thePlyInfo.pTheModelArray[vert0Index].red;
-        thePlyInfo.vertices[vertexIndex + 0].g = thePlyInfo.pTheModelArray[vert0Index].green;
-        thePlyInfo.vertices[vertexIndex + 0].b = thePlyInfo.pTheModelArray[vert0Index].blue;
-
-        unsigned int vert1Index = thePlyInfo.pTheModelTriangleArray[triangleIndex].vertexIndices[1];
-
-        thePlyInfo.vertices[vertexIndex + 1].x = thePlyInfo.pTheModelArray[vert1Index].x;
-        thePlyInfo.vertices[vertexIndex + 1].y = thePlyInfo.pTheModelArray[vert1Index].y;
-        thePlyInfo.vertices[vertexIndex + 1].z = thePlyInfo.pTheModelArray[vert1Index].z;
-        thePlyInfo.vertices[vertexIndex + 1].r = thePlyInfo.pTheModelArray[vert1Index].red;
-        thePlyInfo.vertices[vertexIndex + 1].g = thePlyInfo.pTheModelArray[vert1Index].green;
-        thePlyInfo.vertices[vertexIndex + 1].b = thePlyInfo.pTheModelArray[vert1Index].blue;
-
-        unsigned int vert2Index = thePlyInfo.pTheModelTriangleArray[triangleIndex].vertexIndices[2];
-
-        thePlyInfo.vertices[vertexIndex + 2].x = thePlyInfo.pTheModelArray[vert2Index].x;
-        thePlyInfo.vertices[vertexIndex + 2].y = thePlyInfo.pTheModelArray[vert2Index].y;
-        thePlyInfo.vertices[vertexIndex + 2].z = thePlyInfo.pTheModelArray[vert2Index].z;
-        thePlyInfo.vertices[vertexIndex + 2].r = thePlyInfo.pTheModelArray[vert2Index].red;
-        thePlyInfo.vertices[vertexIndex + 2].g = thePlyInfo.pTheModelArray[vert2Index].green;
-        thePlyInfo.vertices[vertexIndex + 2].b = thePlyInfo.pTheModelArray[vert2Index].blue;
-
-
-        // increment the vertex values by 3
-        vertexIndex += 3;
-
-    }
+//
+//
+//    // Vertices we want to DRAW is number of triangles * 3
+//    unsigned int numVerticesToDraw = thePlyInfo.numberOfTriangles * 3;
+//    thePlyInfo.vertices = new sVertex_XYZ_RGB[numVerticesToDraw];
+//
+//    unsigned int vertexIndex = 0;
+//    for ( unsigned int triangleIndex = 0; triangleIndex != thePlyInfo.numberOfTriangles; triangleIndex++ )
+//    {
+//        // copy the 3 vertices form the trianle information, and look up the actual vertex
+//
+//        unsigned int vert0Index = thePlyInfo.pTheModelTriangleArray[triangleIndex].vertexIndices[0];
+//
+//        thePlyInfo.vertices[vertexIndex + 0].x = thePlyInfo.pTheModelArray[vert0Index].x;
+//        thePlyInfo.vertices[vertexIndex + 0].y = thePlyInfo.pTheModelArray[vert0Index].y;
+//        thePlyInfo.vertices[vertexIndex + 0].z = thePlyInfo.pTheModelArray[vert0Index].z;
+//        thePlyInfo.vertices[vertexIndex + 0].r = thePlyInfo.pTheModelArray[vert0Index].red;
+//        thePlyInfo.vertices[vertexIndex + 0].g = thePlyInfo.pTheModelArray[vert0Index].green;
+//        thePlyInfo.vertices[vertexIndex + 0].b = thePlyInfo.pTheModelArray[vert0Index].blue;
+//
+//        unsigned int vert1Index = thePlyInfo.pTheModelTriangleArray[triangleIndex].vertexIndices[1];
+//
+//        thePlyInfo.vertices[vertexIndex + 1].x = thePlyInfo.pTheModelArray[vert1Index].x;
+//        thePlyInfo.vertices[vertexIndex + 1].y = thePlyInfo.pTheModelArray[vert1Index].y;
+//        thePlyInfo.vertices[vertexIndex + 1].z = thePlyInfo.pTheModelArray[vert1Index].z;
+//        thePlyInfo.vertices[vertexIndex + 1].r = thePlyInfo.pTheModelArray[vert1Index].red;
+//        thePlyInfo.vertices[vertexIndex + 1].g = thePlyInfo.pTheModelArray[vert1Index].green;
+//        thePlyInfo.vertices[vertexIndex + 1].b = thePlyInfo.pTheModelArray[vert1Index].blue;
+//
+//        unsigned int vert2Index = thePlyInfo.pTheModelTriangleArray[triangleIndex].vertexIndices[2];
+//
+//        thePlyInfo.vertices[vertexIndex + 2].x = thePlyInfo.pTheModelArray[vert2Index].x;
+//        thePlyInfo.vertices[vertexIndex + 2].y = thePlyInfo.pTheModelArray[vert2Index].y;
+//        thePlyInfo.vertices[vertexIndex + 2].z = thePlyInfo.pTheModelArray[vert2Index].z;
+//        thePlyInfo.vertices[vertexIndex + 2].r = thePlyInfo.pTheModelArray[vert2Index].red;
+//        thePlyInfo.vertices[vertexIndex + 2].g = thePlyInfo.pTheModelArray[vert2Index].green;
+//        thePlyInfo.vertices[vertexIndex + 2].b = thePlyInfo.pTheModelArray[vert2Index].blue;
+//
+//
+//        // increment the vertex values by 3
+//        vertexIndex += 3;
+//
+//    }
 
 
 
@@ -386,6 +441,8 @@ int main(void)
 
     std::cout << "Window created." << std::endl;
 
+
+
     glfwSetKeyCallback(window, key_callback);
 
     glfwMakeContextCurrent(window);
@@ -403,21 +460,24 @@ int main(void)
     //std::cout << pZ; 
 
 
-    // Defining the 3D model that we are going to draw. 
-    glGenBuffers(1, &vertex_buffer);
-    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
 
-    unsigned int vertexBufferSizeInBytes 
-        = sizeof(sVertex_XYZ_RGB) * numVerticesToDraw;
+
+
+//    // Defining the 3D model that we are going to draw. 
+//    glGenBuffers(1, &vertex_buffer);
+//    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+//
 //    unsigned int vertexBufferSizeInBytes 
-//        = sizeof(thePlyInfo.vertices) * thePlyInfo.numberOfvertices;
-
-//    unsigned int vertexBufferSizeInBytes = sizeof(vertices) * NUMBER_OF_VERTICES;
-    glBufferData(GL_ARRAY_BUFFER, 
-                 vertexBufferSizeInBytes, 
-                 thePlyInfo.vertices,              // (void*)
-                 GL_STATIC_DRAW);
-//    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+//        = sizeof(sVertex_XYZ_RGB) * numVerticesToDraw;
+////    unsigned int vertexBufferSizeInBytes 
+////        = sizeof(thePlyInfo.vertices) * thePlyInfo.numberOfvertices;
+//
+////    unsigned int vertexBufferSizeInBytes = sizeof(vertices) * NUMBER_OF_VERTICES;
+//    glBufferData(GL_ARRAY_BUFFER, 
+//                 vertexBufferSizeInBytes, 
+//                 thePlyInfo.vertices,              // (void*)
+//                 GL_STATIC_DRAW);
+////    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     // Create a shader thingy
     cShaderManager* pTheShaderManager = new cShaderManager();
@@ -446,6 +506,50 @@ int main(void)
 
     glUseProgram(shaderID);
 
+
+
+
+    // Load the models
+    cVAOManager* pVAOManager = new cVAOManager();
+
+
+    sModelDrawInfo motoDrawInfo;
+
+    std::string fileToLoad = "assets/models/MOTO/Blender (load from OBJ export) - only Moto_xyz_n_rgba_uv.ply";
+    if (LoadTheFile(fileToLoad, motoDrawInfo))
+    {
+        std::cout << "Loaded the file OK" << std::endl;
+    }
+    if (pVAOManager->LoadModelIntoVAO("MOTO", motoDrawInfo, shaderID))
+    {
+        std::cout << "Loaded the MOTO model" << std::endl;
+    }
+
+
+
+    sModelDrawInfo bunnyDrawInfo;
+    fileToLoad = "assets/models/bunny/reconstruction/bun_zipper_res2_xyz_n_rgba_uv.ply";
+    if (LoadTheFile(fileToLoad, bunnyDrawInfo))
+    {
+        std::cout << "Loaded the file OK" << std::endl;
+    }
+    if (pVAOManager->LoadModelIntoVAO("Bunny", bunnyDrawInfo, shaderID))
+    {
+        std::cout << "Loaded the Bunny model" << std::endl;
+    } 
+    
+
+    sModelDrawInfo BOPDrawInfo;
+    fileToLoad = "assets/models/BirdOfPrey/BirdOfPrey_Exported.ply";
+    if (LoadTheFile(fileToLoad, BOPDrawInfo))
+    {
+        std::cout << "Loaded the file OK" << std::endl;
+    }
+    if (pVAOManager->LoadModelIntoVAO("BirdOfPrey", BOPDrawInfo, shaderID))
+    {
+        std::cout << "Loaded the BirdOfPrey model" << std::endl;
+    } 
+    
     // Shader setup
 //    vertex_shader = glCreateShader(GL_VERTEX_SHADER);
 //    glShaderSource(vertex_shader, 1, &vertex_shader_text, NULL);
@@ -464,25 +568,25 @@ int main(void)
 //
 //    glUseProgram(program);
 
-    // Vertex layout
-    vpos_location = glGetAttribLocation(shaderID, "vPos");   // Vertex Position
-    vcol_location = glGetAttribLocation(shaderID, "vCol");
-
-    glEnableVertexAttribArray(vpos_location);
-    glVertexAttribPointer(vpos_location,
-                          3,
-                          GL_FLOAT,
-                          GL_FALSE,
-                          sizeof(sVertex_XYZ_RGB),   //  sizeof(vertices[0]),
-                          (void*) offsetof(sVertex_XYZ_RGB, x));      //0);
-
-    glEnableVertexAttribArray(vcol_location);
-    glVertexAttribPointer(vcol_location, 
-                          3, 
-                          GL_FLOAT, 
-                          GL_FALSE,
-                          sizeof(sVertex_XYZ_RGB),               //  sizeof(vertices[0]),
-                          (void*) offsetof(sVertex_XYZ_RGB, r)); //  (sizeof(float) * 3));
+ //   // Vertex layout
+ //   vpos_location = glGetAttribLocation(shaderID, "vPos");   // Vertex Position
+ //   vcol_location = glGetAttribLocation(shaderID, "vCol");
+ //
+ //   glEnableVertexAttribArray(vpos_location);
+ //   glVertexAttribPointer(vpos_location,
+ //                         3,
+ //                         GL_FLOAT,
+ //                         GL_FALSE,
+ //                         sizeof(sVertex_XYZ_RGB),   //  sizeof(vertices[0]),
+ //                         (void*) offsetof(sVertex_XYZ_RGB, x));      //0);
+ //
+ //   glEnableVertexAttribArray(vcol_location);
+ //   glVertexAttribPointer(vcol_location, 
+ //                         3, 
+ //                         GL_FLOAT, 
+ //                         GL_FALSE,
+ //                         sizeof(sVertex_XYZ_RGB),               //  sizeof(vertices[0]),
+ //                         (void*) offsetof(sVertex_XYZ_RGB, r)); //  (sizeof(float) * 3));
 
 
     mvp_location = glGetUniformLocation(shaderID, "MVP");       // program
@@ -544,9 +648,27 @@ int main(void)
 
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);      // GL_POINT, GL_LINE
 
-        glDrawArrays(GL_TRIANGLES, 0, numVerticesToDraw);
-//        glDrawArrays(GL_TRIANGLES, 0, thePlyInfo.numberOfvertices);
-//        glDrawArrays(GL_TRIANGLES, 0, 3);
+
+        // Choose the VAO that has the model we want to draw...
+        sModelDrawInfo drawingInformation;
+//        if ( pVAOManager->FindDrawInfoByModelName("MOTO", drawingInformation) )
+        if ( pVAOManager->FindDrawInfoByModelName("Bunny", drawingInformation) )
+        {
+            glBindVertexArray(drawingInformation.VAO_ID);
+
+            glDrawElements(GL_TRIANGLES, 
+                           drawingInformation.numberOfIndices, 
+                           GL_UNSIGNED_INT,
+                           (void*) 0 );
+
+    //        glDrawArrays(GL_TRIANGLES, 0, numVerticesToDraw);
+    //        glDrawArrays(GL_TRIANGLES, 0, thePlyInfo.numberOfvertices);
+    //        glDrawArrays(GL_TRIANGLES, 0, 3);
+
+            glBindVertexArray(0);
+
+        }//if ( pVAOManager...
+
 
         glfwSwapBuffers(window);
         glfwPollEvents();
