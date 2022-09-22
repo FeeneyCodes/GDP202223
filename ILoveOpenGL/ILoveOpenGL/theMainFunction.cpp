@@ -1,3 +1,4 @@
+
 //#include <glad/glad.h>
 //#define GLFW_INCLUDE_NONE
 //#include <GLFW/glfw3.h>
@@ -55,6 +56,7 @@ struct sPLYFileInfo
 
     // This is the data we are copying to the GPU 
     sVertex_XYZ_RGB* vertices = NULL;
+    unsigned int numberOfVerticesToDraw = 0;
 };
 
 //sVertex_XYZ_RGB vertices[] =
@@ -266,11 +268,20 @@ bool LoadTheFile(std::string filename, sPLYFileInfo &thePlyInfo)
 int main(void)
 {
     sPLYFileInfo thePlyInfo;
-    std::string fileToLoad = "assets/models/bunny/reconstruction/bun_zipper_res2_xyz_n_rgba_uv.ply";
+//    std::string fileToLoad = "assets/models/BirdOfPrey/BirdOfPrey_Exported.ply";
+    std::string fileToLoad = "assets/models/MOTO/Blender (load from OBJ export) - only Moto_xyz_n_rgba_uv.ply";
+//    std::string fileToLoad = "assets/models/bunny/reconstruction/bun_zipper_res2_xyz_n_rgba_uv.ply";
     if ( LoadTheFile(fileToLoad, thePlyInfo) )
     {
         std::cout << "Loaded the file OK" << std::endl;
     }
+
+    sPLYFileInfo thePlyInfo_Motorcycle;
+    sPLYFileInfo thePlyInfo_BirdOfPrey;
+
+    sPLYFileInfo theModelsWeCanDraw[100];
+    std::vector<sPLYFileInfo> vecAllTheModelsWeCanDraw;
+
 
     // Copy the file data I loaded into the array that the shader expects
 //    thePlyInfo.vertices = new sVertex_XYZ_RGB[thePlyInfo.numberOfvertices];
@@ -397,7 +408,9 @@ int main(void)
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
 
     unsigned int vertexBufferSizeInBytes 
-        = sizeof(thePlyInfo.vertices) * thePlyInfo.numberOfvertices;
+        = sizeof(sVertex_XYZ_RGB) * numVerticesToDraw;
+//    unsigned int vertexBufferSizeInBytes 
+//        = sizeof(thePlyInfo.vertices) * thePlyInfo.numberOfvertices;
 
 //    unsigned int vertexBufferSizeInBytes = sizeof(vertices) * NUMBER_OF_VERTICES;
     glBufferData(GL_ARRAY_BUFFER, 
@@ -486,7 +499,17 @@ int main(void)
         ratio = width / (float)height;
 
         glViewport(0, 0, width, height);
-        glClear(GL_COLOR_BUFFER_BIT);
+
+        // Turn on depth buffer test at draw time
+        glEnable(GL_DEPTH_TEST);
+
+        // Don't draw any "back facing" triangles
+        glCullFace(GL_BACK);
+
+
+        // note the binary OR (not the usual boolean "or" comparison)
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+//        glClear(GL_COLOR_BUFFER_BIT);
 
         // Make an "identity matrix"
  //       mat4x4_identity(m);
@@ -518,7 +541,11 @@ int main(void)
         glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(mvp));
 
         glPointSize(15.0f);
-        glDrawArrays(GL_TRIANGLES, 0, thePlyInfo.numberOfvertices);
+
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);      // GL_POINT, GL_LINE
+
+        glDrawArrays(GL_TRIANGLES, 0, numVerticesToDraw);
+//        glDrawArrays(GL_TRIANGLES, 0, thePlyInfo.numberOfvertices);
 //        glDrawArrays(GL_TRIANGLES, 0, 3);
 
         glfwSwapBuffers(window);
