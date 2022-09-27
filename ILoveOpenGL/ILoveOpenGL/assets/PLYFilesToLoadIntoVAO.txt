@@ -1,0 +1,2 @@
+assets/models/MOTO/Blender (load from OBJ export) - only Moto_xyz_n_rgba_uv.ply
+MOTO

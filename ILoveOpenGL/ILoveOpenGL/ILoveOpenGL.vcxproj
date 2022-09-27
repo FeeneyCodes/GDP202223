@@ -137,6 +137,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="cMeshObject.cpp" />
     <ClCompile Include="cShader.cpp" />
     <ClCompile Include="cShaderManager.cpp" />
     <ClCompile Include="cVAOManager\cVAOManager.cpp" />
@@ -148,6 +149,7 @@
     <ClInclude Include="cShaderManager.h" />
     <ClInclude Include="cVAOManager\cVAOManager.h" />
     <ClInclude Include="globalOpenGL.h" />
+    <ClInclude Include="globalThings.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

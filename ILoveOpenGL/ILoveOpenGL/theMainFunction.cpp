@@ -19,6 +19,8 @@
 #include <fstream>  // File streaming thing (like cin, etc.)
 #include <sstream>  // "string builder" type thing
 
+#include "globalThings.h"
+
 #include "cShaderManager.h"
 
 #include "cVAOManager/cVAOManager.h"
@@ -550,6 +552,46 @@ int main(void)
         std::cout << "Loaded the BirdOfPrey model" << std::endl;
     } 
     
+    // On the heap (we used new and there's a pointer)
+    cMeshObject* pObjectToDraw = new cMeshObject();
+    pObjectToDraw->meshName = "MOTO";
+
+    cMeshObject* pBunnyObjectToDraw1 = new cMeshObject();
+    pBunnyObjectToDraw1->meshName = "Bunny";
+
+    cMeshObject* pBunnyObjectToDraw2 = new cMeshObject();
+    pBunnyObjectToDraw2->meshName = "Bunny";
+
+    cMeshObject* pSpaceShip = new cMeshObject();
+    pSpaceShip->meshName = "BirdOfPrey";
+
+
+    // Add all these to an array:
+    cMeshObject* my_pMeshes[10];
+    my_pMeshes[0] = pObjectToDraw;          // "MOTO"
+    my_pMeshes[1] = pBunnyObjectToDraw1;    // "Bunny"
+    my_pMeshes[2] = pBunnyObjectToDraw2;    // "Bunny"
+    my_pMeshes[3] = pSpaceShip;    // "BirdOfPrey"
+//    my_pMeshes[4] = ??? 
+
+    unsigned int numberOfObjectsToDraw = 4;
+
+
+
+
+/*  We could also make this on the stack in this way:
+
+    cMeshObject objectToDraw;
+    objectToDraw.meshName = "MOTO";
+
+    cMeshObject myMeshes[10];
+    myMeshes[0] = objectToDraw;     // Copies it! 
+
+    objectToDraw.meshName = "Bunny";    // Changes this one, but NOT the one in the array
+
+*/
+
+
     // Shader setup
 //    vertex_shader = glCreateShader(GL_VERTEX_SHADER);
 //    glShaderSource(vertex_shader, 1, &vertex_shader_text, NULL);
@@ -567,7 +609,7 @@ int main(void)
 //    glLinkProgram(program);
 //
 //    glUseProgram(program);
-
+//
  //   // Vertex layout
  //   vpos_location = glGetAttribLocation(shaderID, "vPos");   // Vertex Position
  //   vcol_location = glGetAttribLocation(shaderID, "vCol");
@@ -650,24 +692,38 @@ int main(void)
 
 
         // Choose the VAO that has the model we want to draw...
-        sModelDrawInfo drawingInformation;
-        if ( pVAOManager->FindDrawInfoByModelName("MOTO", drawingInformation) )
-//        if ( pVAOManager->FindDrawInfoByModelName("Bunny", drawingInformation) )
+
+//        if ( pVAOManager->FindDrawInfoByModelName("MOTO", drawingInformation) )
+
+        for ( unsigned int index = 0; index != numberOfObjectsToDraw; index++ )
         {
-            glBindVertexArray(drawingInformation.VAO_ID);
 
-            glDrawElements(GL_TRIANGLES, 
-                           drawingInformation.numberOfIndices, 
-                           GL_UNSIGNED_INT,
-                           (void*) 0 );
+            sModelDrawInfo drawingInformation;
+//        if ( pVAOManager->FindDrawInfoByModelName(pObjectToDraw->meshName, drawingInformation) )
 
-    //        glDrawArrays(GL_TRIANGLES, 0, numVerticesToDraw);
-    //        glDrawArrays(GL_TRIANGLES, 0, thePlyInfo.numberOfvertices);
-    //        glDrawArrays(GL_TRIANGLES, 0, 3);
+            if ( pVAOManager->FindDrawInfoByModelName(my_pMeshes[index]->meshName, drawingInformation) )
+            {
+                glBindVertexArray(drawingInformation.VAO_ID);
 
-            glBindVertexArray(0);
+                glDrawElements(GL_TRIANGLES, 
+                               drawingInformation.numberOfIndices, 
+                               GL_UNSIGNED_INT,
+                               (void*) 0 );
 
-        }//if ( pVAOManager...
+        //        glDrawArrays(GL_TRIANGLES, 0, numVerticesToDraw);
+        //        glDrawArrays(GL_TRIANGLES, 0, thePlyInfo.numberOfvertices);
+        //        glDrawArrays(GL_TRIANGLES, 0, 3);
+
+                glBindVertexArray(0);
+
+            }
+            else
+            {
+                // Didn't find that model
+                std::cout << "Error: didn't find model to draw." << std::endl;
+
+            }//if ( pVAOManager...
+        }//for ( unsigned int index
 
 
         glfwSwapBuffers(window);
