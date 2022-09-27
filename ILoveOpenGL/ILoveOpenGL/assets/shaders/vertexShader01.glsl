@@ -11,6 +11,9 @@ void main()
 {
 	vec3 vertPosition = vPos;
 	
+//	vertPosition.xyz *= 0.1f;
+//	vertPosition.x += 10.0f;
+	
 	gl_Position = MVP * vec4(vertPosition, 1.0f);
 	colour = vCol;
 }

@@ -22,6 +22,9 @@
     <Filter Include="cMeshObject">
       <UniqueIdentifier>{66cd0fb6-300e-4a95-a821-4c5515b8be57}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{6514997c-424c-401d-b334-d4683b0fea2d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="theMainFunction.cpp">
@@ -42,6 +45,9 @@
     <ClCompile Include="cMeshObject.cpp">
       <Filter>cMeshObject</Filter>
     </ClCompile>
+    <ClCompile Include="funWithVectors.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cShaderManager.h">
@@ -59,5 +65,13 @@
     <ClInclude Include="globalThings.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="assets\shaders\fragmentShader01.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="assets\shaders\vertexShader01.glsl">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -141,6 +141,7 @@
     <ClCompile Include="cShader.cpp" />
     <ClCompile Include="cShaderManager.cpp" />
     <ClCompile Include="cVAOManager\cVAOManager.cpp" />
+    <ClCompile Include="funWithVectors.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="theMainFunction.cpp" />
   </ItemGroup>
@@ -150,6 +151,10 @@
     <ClInclude Include="cVAOManager\cVAOManager.h" />
     <ClInclude Include="globalOpenGL.h" />
     <ClInclude Include="globalThings.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="assets\shaders\fragmentShader01.glsl" />
+    <None Include="assets\shaders\vertexShader01.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

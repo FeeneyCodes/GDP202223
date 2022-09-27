@@ -1,2 +1,9 @@
 assets/models/MOTO/Blender (load from OBJ export) - only Moto_xyz_n_rgba_uv.ply
 MOTO
+assets/models/bunny/reconstruction/bun_zipper_res2_xyz_n_rgba_uv.ply
+Bunny
+assets/models/BirdOfPrey/BirdOfPrey_Exported.ply
+BirdOfPrey
+assets/models/Cute_Submarine.ply
+Submarine
+EOF

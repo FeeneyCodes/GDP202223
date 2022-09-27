@@ -19,6 +19,9 @@
 #include <fstream>  // File streaming thing (like cin, etc.)
 #include <sstream>  // "string builder" type thing
 
+// Some STL (Standard Template Library) things
+#include <vector>           // aka a "smart array"
+
 #include "globalThings.h"
 
 #include "cShaderManager.h"
@@ -80,7 +83,7 @@
 //
 //sVertex_XYZ_RGB* vertices = new sVertex_XYZ_RGB[NUMBER_OF_VERTICES];
 
-glm::vec3 g_cameraEye = glm::vec3(0.0, 0.0, -4.0f);
+glm::vec3 g_cameraEye = glm::vec3(0.0, 0.0, -25.0f);
 glm::vec3 g_cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
 
 
@@ -166,7 +169,7 @@ float RandomFloat(float a, float b) {
 
 
 
-bool LoadTheFile(std::string filename, sModelDrawInfo &modelDrawInfo)
+bool LoadThePLYFile(std::string filename, sModelDrawInfo &modelDrawInfo)
 {
     struct sVertex_XYZ_N_RGBA_UV
     {
@@ -266,6 +269,18 @@ bool LoadTheFile(std::string filename, sModelDrawInfo &modelDrawInfo)
    }
     std::cout << "done" << std::endl;
 
+
+    // HACK: "Transform" the model here
+    for (unsigned int count = 0; count != modelDrawInfo.numberOfVertices; count++)
+    {
+//        pTheModelArray[count].x *= 0.1f;
+//        pTheModelArray[count].y *= 0.1f;
+//        pTheModelArray[count].z *= 0.1f;
+
+//        pTheModelArray[count].x += 20.0f;
+    }
+
+
     // Load the faces (or triangles)
     pTheModelTriangleArray = new sTrianglePLY[modelDrawInfo.numberOfTriangles];
 
@@ -322,7 +337,79 @@ bool LoadTheFile(std::string filename, sModelDrawInfo &modelDrawInfo)
 }
 
 
-int main(void)
+
+bool LoadModelTypesIntoVAO(std::string fileTypesToLoadName, 
+                           cVAOManager* pVAOManager, 
+                           GLuint shaderID)
+{
+    std::ifstream modelTypeFile( fileTypesToLoadName.c_str() );
+    if ( ! modelTypeFile.is_open() )
+    {
+        // Can't find that file
+        return false;
+    }
+
+    // At this point, the file is open and ready for reading
+
+    std::string PLYFileNameToLoad;     // = "assets/models/MOTO/Blender (load from OBJ export) - only Moto_xyz_n_rgba_uv.ply";
+    std::string friendlyName;   // = "MOTO";
+
+    bool bKeepReadingFile = true;
+
+    const unsigned int BUFFER_SIZE = 1000;  // 1000 characters
+    char textBuffer[BUFFER_SIZE];       // Allocate AND clear (that's the {0} part)
+    // Clear that array to all zeros
+    memset(textBuffer, 0, BUFFER_SIZE);
+
+    // Or if it's integers, you can can do this short cut:
+    // char textBuffer[BUFFER_SIZE] = { 0 };       // Allocate AND clear (that's the {0} part)
+
+    while ( bKeepReadingFile )
+    {
+        // Reads the entire line into the buffer (including any white space)
+        modelTypeFile.getline(textBuffer, BUFFER_SIZE);
+
+        PLYFileNameToLoad.clear();  // Erase whatever is already there (from before)
+        PLYFileNameToLoad.append(textBuffer);
+
+        // Is this the end of the file (have I read "EOF" yet?)?
+        if ( PLYFileNameToLoad == "EOF" )
+        {
+            // All done
+            bKeepReadingFile = false;
+            // Skip to the end of the while loop
+            continue;
+        }
+
+        // Load the "friendly name" line also
+
+        memset(textBuffer, 0, BUFFER_SIZE);
+        modelTypeFile.getline(textBuffer, BUFFER_SIZE);
+        friendlyName.clear();
+        friendlyName.append(textBuffer);
+
+        sModelDrawInfo motoDrawInfo;
+
+        if (LoadThePLYFile(PLYFileNameToLoad, motoDrawInfo))
+        {
+            std::cout << "Loaded the file OK" << std::endl;
+        }
+        if (pVAOManager->LoadModelIntoVAO(friendlyName, motoDrawInfo, shaderID))
+        {
+            std::cout << "Loaded the MOTO model" << std::endl;
+        }
+
+    }//while (modelTypeFile
+
+    return true;
+}
+
+bool SaveTheVAOModelTypesToFile(std::string fileTypesToLoadName,
+                                cVAOManager* pVAOManager);
+
+
+
+int main( int argc, char* argv[] )
 {
 //    sPLYFileInfo thePlyInfo;
 //    std::string fileToLoad = "assets/models/BirdOfPrey/BirdOfPrey_Exported.ply";
@@ -514,11 +601,21 @@ int main(void)
     // Load the models
     cVAOManager* pVAOManager = new cVAOManager();
 
+    if ( ! LoadModelTypesIntoVAO("assets/PLYFilesToLoadIntoVAO.txt", pVAOManager, shaderID) )
+    {
+        std::cout << "Error: Unable to load list of models to load into VAO file" << std::endl;
+        // Do we exit here? 
+        // (How do we clean up stuff we've made, etc.)
+    }//if (!LoadModelTypesIntoVAO...
 
+
+// **************************************************************************************
+// START OF: LOADING the file types into the VAO manager:
+/*
     sModelDrawInfo motoDrawInfo;
 
     std::string fileToLoad = "assets/models/MOTO/Blender (load from OBJ export) - only Moto_xyz_n_rgba_uv.ply";
-    if (LoadTheFile(fileToLoad, motoDrawInfo))
+    if (LoadThePLYFile(fileToLoad, motoDrawInfo))
     {
         std::cout << "Loaded the file OK" << std::endl;
     }
@@ -528,10 +625,9 @@ int main(void)
     }
 
 
-
     sModelDrawInfo bunnyDrawInfo;
     fileToLoad = "assets/models/bunny/reconstruction/bun_zipper_res2_xyz_n_rgba_uv.ply";
-    if (LoadTheFile(fileToLoad, bunnyDrawInfo))
+    if (LoadThePLYFile(fileToLoad, bunnyDrawInfo))
     {
         std::cout << "Loaded the file OK" << std::endl;
     }
@@ -543,7 +639,7 @@ int main(void)
 
     sModelDrawInfo BOPDrawInfo;
     fileToLoad = "assets/models/BirdOfPrey/BirdOfPrey_Exported.ply";
-    if (LoadTheFile(fileToLoad, BOPDrawInfo))
+    if (LoadThePLYFile(fileToLoad, BOPDrawInfo))
     {
         std::cout << "Loaded the file OK" << std::endl;
     }
@@ -551,32 +647,52 @@ int main(void)
     {
         std::cout << "Loaded the BirdOfPrey model" << std::endl;
     } 
+*/
+// END OF: LOADING the file types into the VAO manager
+// **************************************************************************************
     
     // On the heap (we used new and there's a pointer)
     cMeshObject* pObjectToDraw = new cMeshObject();
     pObjectToDraw->meshName = "MOTO";
+    pObjectToDraw->position = glm::vec3(-10.0f, 0.0f, 0.0f);
 
     cMeshObject* pBunnyObjectToDraw1 = new cMeshObject();
     pBunnyObjectToDraw1->meshName = "Bunny";
+    pBunnyObjectToDraw1->position = glm::vec3(0.0f, -5.0f, 0.0f);
 
     cMeshObject* pBunnyObjectToDraw2 = new cMeshObject();
     pBunnyObjectToDraw2->meshName = "Bunny";
+    pBunnyObjectToDraw2->position = glm::vec3(10.0f, -5.0f, 0.0f);
 
     cMeshObject* pSpaceShip = new cMeshObject();
     pSpaceShip->meshName = "BirdOfPrey";
 
-
-    // Add all these to an array:
-    cMeshObject* my_pMeshes[10];
-    my_pMeshes[0] = pObjectToDraw;          // "MOTO"
-    my_pMeshes[1] = pBunnyObjectToDraw1;    // "Bunny"
-    my_pMeshes[2] = pBunnyObjectToDraw2;    // "Bunny"
-    my_pMeshes[3] = pSpaceShip;    // "BirdOfPrey"
-//    my_pMeshes[4] = ??? 
-
-    unsigned int numberOfObjectsToDraw = 4;
+    cMeshObject* pSubmarine = new cMeshObject();
+    pSubmarine->meshName = "Submarine";
+    pSubmarine->position = glm::vec3(0.0f, 0.0f, 100.0f);
+    pSubmarine->scale = 0.1f;
 
 
+//    // Add all these to an array:
+//    cMeshObject* my_pMeshes[10];
+//    my_pMeshes[0] = pObjectToDraw;          // "MOTO"
+//    my_pMeshes[1] = pBunnyObjectToDraw1;    // "Bunny"
+//    my_pMeshes[2] = pBunnyObjectToDraw2;    // "Bunny"
+//    my_pMeshes[3] = pSpaceShip;    // "BirdOfPrey"
+//    my_pMeshes[4] = pSubmarine;    // "BirdOfPrey"
+////    my_pMeshes[4] = ??? 
+//
+//    unsigned int numberOfObjectsToDraw = 5;
+
+    // Which is the equivalent to:
+    //    cMeshObject* my_pMeshes[10];
+    std::vector< cMeshObject* > vec_pMeshObjects;
+
+    //vec_pMeshObjects.push_back(pObjectToDraw);          // "MOTO"
+    //vec_pMeshObjects.push_back(pBunnyObjectToDraw1);    // "Bunny"
+    //vec_pMeshObjects.push_back(pBunnyObjectToDraw2);    // "Bunny"
+    //vec_pMeshObjects.push_back(pSpaceShip);    // "BirdOfPrey"
+    vec_pMeshObjects.push_back(pSubmarine);    // "BirdOfPrey"
 
 
 /*  We could also make this on the stack in this way:
@@ -639,7 +755,11 @@ int main(void)
         float ratio;
         int width, height;
 //        mat4x4 m, p, mvp;
-        glm::mat4x4 m, p, mvp;
+        glm::mat4x4 matModel;
+        glm::mat4x4 matProjection;
+        glm::mat4x4 matView; 
+
+        glm::mat4x4 mvp;            // Model-View-Projection
 
         glfwGetFramebufferSize(window, &width, &height);
         ratio = width / (float)height;
@@ -659,27 +779,64 @@ int main(void)
 
         // Make an "identity matrix"
  //       mat4x4_identity(m);
-        m = glm::mat4x4(1.0f);  // identity matrix
+        matModel = glm::mat4x4(1.0f);  // identity matrix
+
+        // Move the object 
+        glm::mat4 matTranslation = glm::translate(glm::mat4(1.0f),
+                                                  glm::vec3(10.0f, 0.0f, 0.0f));
+
+
+//        matModel = matModel * matTranslation;
+
+        glm::mat4 matScale = glm::scale(glm::mat4(1.0f),
+                                        glm::vec3(0.1f, 0.1f, 0.1f));
+
+//        matModel = matModel * matScale;
+
+        glm::mat4 matRoationZ = glm::rotate(glm::mat4(1.0f), 
+                                            glm::radians(45.0f),                // Angle to rotate
+                                            glm::vec3(0.0f, 0.0f, 1.0f));       // Axis to rotate around
+
+
+//        matModel = matModel * matRoationZ;
+
+//        glm::mat4 matRoationY = glm::rotate(glm::mat4(1.0f), 
+//                                            glm::radians(45.0f),                // Angle to rotate
+//                                            glm::vec3(0.0f, 1.0f, 0.0f));       // Axis to rotate around
+
+        glm::mat4 matRoationY = glm::rotate(glm::mat4(1.0f), 
+                                            (float)glfwGetTime(),                // Angle to rotate
+                                            glm::vec3(0.0f, 1.0f, 0.0f));       // Axis to rotate around
+
+        matModel = matModel * matRoationY;
+
+        glm::mat4 matRoationX = glm::rotate(glm::mat4(1.0f), 
+                                            glm::radians(45.0f),                // Angle to rotate
+                                            glm::vec3(1.0f, 0.0f, 0.0f));       // Axis to rotate around
+
+
+//        matModel = matModel * matRoationX;
+
+
 
 //        mat4x4_rotate_Z(m, m, (float)glfwGetTime());
 //        mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
-        p = glm::perspective(0.6f,
+        matProjection = glm::perspective(0.6f,
                              ratio,
                              0.1f,
                              1000.0f);
 
-        glm::mat4x4 v = glm::mat4(1.0f);
 
         //glm::vec3 cameraEye = glm::vec3(0.0, 0.0, -4.0f);
         //glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
         glm::vec3 upVector = glm::vec3(0.0f, 1.0f, 0.0f);
 
-        v = glm::lookAt(::g_cameraEye,
+        matView = glm::lookAt(::g_cameraEye,
                         ::g_cameraTarget,
                         upVector);
 
 //        mat4x4_mul(mvp, p, m);
-        mvp = p * v * m; 
+        mvp = matProjection * matView * matModel;
 
 
         //glUseProgram(program);
@@ -688,20 +845,25 @@ int main(void)
 
         glPointSize(15.0f);
 
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);      // GL_POINT, GL_LINE
+//        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);      // GL_POINT, GL_LINE
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);      // GL_POINT, GL_LINE
 
 
         // Choose the VAO that has the model we want to draw...
 
 //        if ( pVAOManager->FindDrawInfoByModelName("MOTO", drawingInformation) )
 
-        for ( unsigned int index = 0; index != numberOfObjectsToDraw; index++ )
+//        for ( unsigned int index = 0; index != numberOfObjectsToDraw; index++ )
+
+        for ( unsigned int index = 0; index != vec_pMeshObjects.size(); index++ )
         {
 
             sModelDrawInfo drawingInformation;
 //        if ( pVAOManager->FindDrawInfoByModelName(pObjectToDraw->meshName, drawingInformation) )
 
-            if ( pVAOManager->FindDrawInfoByModelName(my_pMeshes[index]->meshName, drawingInformation) )
+//            if ( pVAOManager->FindDrawInfoByModelName(my_pMeshes[index]->meshName, drawingInformation) )
+
+            if ( pVAOManager->FindDrawInfoByModelName(vec_pMeshObjects[index]->meshName, drawingInformation) )
             {
                 glBindVertexArray(drawingInformation.VAO_ID);
 
