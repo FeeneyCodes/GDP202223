@@ -651,8 +651,8 @@ int main(void)
 
         // Choose the VAO that has the model we want to draw...
         sModelDrawInfo drawingInformation;
-//        if ( pVAOManager->FindDrawInfoByModelName("MOTO", drawingInformation) )
-        if ( pVAOManager->FindDrawInfoByModelName("Bunny", drawingInformation) )
+        if ( pVAOManager->FindDrawInfoByModelName("MOTO", drawingInformation) )
+//        if ( pVAOManager->FindDrawInfoByModelName("Bunny", drawingInformation) )
         {
             glBindVertexArray(drawingInformation.VAO_ID);
 
