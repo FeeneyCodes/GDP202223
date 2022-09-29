@@ -15,13 +15,18 @@ public:
 	cMeshObject();
 	std::string meshName;
 
+	// Human friendly name for this particular instance of the mesh
+	std::string friendlyName;
+
 	glm::vec3 position;     // 0,0,0 (origin)
 	glm::vec3 rotation;     // 0,0,0 ration around each Euler axis
     glm::vec4 colour;		// 0,0,0,1 (black)
 	float scale;
     bool isWireframe;		// false
 
-	std::string textures[10];
+
+	// Later (after mid-term)
+//	std::string textures[10];
 
 };
 

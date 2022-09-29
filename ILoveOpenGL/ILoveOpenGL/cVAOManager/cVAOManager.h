@@ -40,7 +40,7 @@ struct sModelDrawInfo
 	unsigned int* pIndices;
 };
 
-
+// This holds the "type" of model (mesh) we are going to draw. 
 class cVAOManager
 {
 public:

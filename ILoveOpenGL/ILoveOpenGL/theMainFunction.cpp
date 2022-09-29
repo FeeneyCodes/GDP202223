@@ -679,14 +679,17 @@ int main( int argc, char* argv[] )
 //    my_pMeshes[1] = pBunnyObjectToDraw1;    // "Bunny"
 //    my_pMeshes[2] = pBunnyObjectToDraw2;    // "Bunny"
 //    my_pMeshes[3] = pSpaceShip;    // "BirdOfPrey"
-//    my_pMeshes[4] = pSubmarine;    // "BirdOfPrey"
+//    my_pMeshes[4] = pSubmarine;    // "Submarine"
 ////    my_pMeshes[4] = ??? 
+// 
+//     Now I want "Homer Simpson" at index #0
 //
 //    unsigned int numberOfObjectsToDraw = 5;
 
     // Which is the equivalent to:
     //    cMeshObject* my_pMeshes[10];
     std::vector< cMeshObject* > vec_pMeshObjects;
+
 
     //vec_pMeshObjects.push_back(pObjectToDraw);          // "MOTO"
     //vec_pMeshObjects.push_back(pBunnyObjectToDraw1);    // "Bunny"
@@ -855,15 +858,24 @@ int main( int argc, char* argv[] )
 
 //        for ( unsigned int index = 0; index != numberOfObjectsToDraw; index++ )
 
-        for ( unsigned int index = 0; index != vec_pMeshObjects.size(); index++ )
+//        for ( unsigned int index = 0; index != vec_pMeshObjects.size(); index++ )
+
+        //std::vector< cMeshObject* > vec_pMeshObjects;
+        for ( std::vector< cMeshObject* >::iterator itCurrentMesh = vec_pMeshObjects.begin(); 
+             itCurrentMesh != vec_pMeshObjects.end(); 
+             itCurrentMesh++ )
         {
 
             sModelDrawInfo drawingInformation;
 //        if ( pVAOManager->FindDrawInfoByModelName(pObjectToDraw->meshName, drawingInformation) )
 
 //            if ( pVAOManager->FindDrawInfoByModelName(my_pMeshes[index]->meshName, drawingInformation) )
+//            if ( pVAOManager->FindDrawInfoByModelName(vec_pMeshObjects[index]->meshName, drawingInformation) )
+//            if ( pVAOManager->FindDrawInfoByModelName( (*itCurrentMesh)->meshName, drawingInformation) )
+                
+            cMeshObject* pCurrentMeshObject = *itCurrentMesh;        // * is the iterator access thing
 
-            if ( pVAOManager->FindDrawInfoByModelName(vec_pMeshObjects[index]->meshName, drawingInformation) )
+            if ( pVAOManager->FindDrawInfoByModelName(pCurrentMeshObject->meshName, drawingInformation) )
             {
                 glBindVertexArray(drawingInformation.VAO_ID);
 

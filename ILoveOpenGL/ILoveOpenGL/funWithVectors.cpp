@@ -1,7 +1,16 @@
 #include <vector>
+#include <list>
 #include <iostream>
 #include <string>
 #include "cMeshObject.h"
+#include <algorithm>
+
+// Sort predicate function signature
+bool SortByMeshNameAscending(const cMeshObject& A, const cMeshObject& B);
+
+// find_if predicate function signature
+bool FindHelloKitty(const cMeshObject& theObject);
+
 
 void vectorStuffFunction(void)
 {
@@ -13,7 +22,7 @@ void vectorStuffFunction(void)
 
 	std::cout << myArray[5];
 
-	int myArray1[10];
+//	int myArray1[10];
 
 	std::vector<int> myVector;
 
@@ -56,8 +65,147 @@ void vectorStuffFunction(void)
 	cMeshObject myArrayOfMeshes[10];
 
 
-	cMeshObject* myArrayOfMeshesPointers[10];
-	std::vector< cMeshObject* > vecOfPointersToMeshObjects;
+//	cMeshObject* myArrayOfMeshesPointers[10];
+//	std::vector< cMeshObject* > vecOfPointersToMeshObjects;
 
 	return;
+}
+
+template <class HEY>
+int DoThis(HEY x, HEY y)
+{
+	return x + y;
+}
+
+
+void UselessFunction(void)
+{
+	// vector of int
+	std::vector< int > myVectorOfInts;
+
+	std::vector< std::string > myVectorOfStrings;
+
+	std::vector< cMeshObject > myObjects;
+
+
+
+	for ( unsigned int index = 0; index != myObjects.size(); index++ )
+	{
+		// Do stuff
+		myObjects[index].position.x += 1.0f;
+	}
+
+	std::list< cMeshObject > myListOfObjects;
+	for ( unsigned int index = 0; index != myListOfObjects.size(); index++ )
+	{
+		// Do stuff
+		//myObjects[index].position.x += 1.0f;
+	}
+
+
+	for (unsigned int index = 0; index != myObjects.size(); index++)
+	{
+		// Do stuff
+		myObjects[index].position.x += 1.0f;
+	}
+
+
+	// std::vector< cMeshObject > myObjects;
+	for ( std::vector< cMeshObject >::iterator itObjects = myObjects.begin(); 
+		  itObjects != myObjects.end();
+		  itObjects++)
+	{
+		// Do stuff
+		cMeshObject* pThisThing;
+		pThisThing->position;
+
+		//myObjects[index].position.x += 1.0f;
+
+		itObjects->position.x += 1.0f;
+	}
+
+
+	for (std::vector< cMeshObject >::iterator itObjects = myObjects.begin();
+		 itObjects != myObjects.end();
+		 itObjects++)
+	{
+		// 
+	}
+
+	// This WILL sort...Or will it??? 
+	// 
+	// This will ONLY WORK *IF* the thing inside the container 
+	//	has an < operator
+	//std::sort(myObjects.begin(), myObjects.end());
+
+	std::vector<std::string> myInts;
+	std::sort(myInts.begin(), myInts.end());
+
+
+	// Sort by Meshname Ascending
+	std::sort(myObjects.begin(), myObjects.end(), SortByMeshNameAscending);
+
+	// This find will only work if the "==" is set.
+	//std::find(myObjects.begin(), myObjects.end(),  )
+
+	std::vector< cMeshObject >::iterator itHelloKitty 
+		= std::find_if(myObjects.begin(), myObjects.end(), FindHelloKitty);
+
+	if ( itHelloKitty == myObjects.end() )
+	{
+		// DIDN'T find it.
+	}
+	if (itHelloKitty != myObjects.end())
+	{
+		std::cout << itHelloKitty->friendlyName;
+	}
+
+	return;
+}
+
+// A "predicate function"
+bool SortByMeshNameAscending(const cMeshObject &A, const cMeshObject &B)
+{
+	if ( A.meshName < B.meshName )
+	{
+		return true;
+	}
+	return false;
+}
+
+// A "predicate function"
+bool FindHelloKitty(const cMeshObject& theObject)
+{
+	if (theObject.friendlyName == "Hello Kitty")
+	{
+		return true;
+	}
+	return false;
+}
+
+
+
+
+void Lambda(void)
+{
+
+	std::vector< cMeshObject > myObjects;
+
+
+	std::vector< cMeshObject >::iterator itHelloKitty
+		= std::find_if(myObjects.begin(), myObjects.end(), 
+					   
+//		bool FindHelloKitty(const cMeshObject & theObject)
+//		{
+//			if (theObject.friendlyName == "Hello Kitty")
+//			{
+//				return true;
+//			}
+//			return false;
+//		}
+					   
+	);
+
+
+
 }
