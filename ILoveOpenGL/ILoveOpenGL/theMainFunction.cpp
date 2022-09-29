@@ -769,112 +769,99 @@ int main( int argc, char* argv[] )
 
         glViewport(0, 0, width, height);
 
-        // Turn on depth buffer test at draw time
-        glEnable(GL_DEPTH_TEST);
-
-        // Don't draw any "back facing" triangles
-        glCullFace(GL_BACK);
-
-
         // note the binary OR (not the usual boolean "or" comparison)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 //        glClear(GL_COLOR_BUFFER_BIT);
 
-        // Make an "identity matrix"
- //       mat4x4_identity(m);
-        matModel = glm::mat4x4(1.0f);  // identity matrix
 
-        // Move the object 
-        glm::mat4 matTranslation = glm::translate(glm::mat4(1.0f),
-                                                  glm::vec3(10.0f, 0.0f, 0.0f));
-
-
-//        matModel = matModel * matTranslation;
-
-        glm::mat4 matScale = glm::scale(glm::mat4(1.0f),
-                                        glm::vec3(0.1f, 0.1f, 0.1f));
-
-//        matModel = matModel * matScale;
-
-        glm::mat4 matRoationZ = glm::rotate(glm::mat4(1.0f), 
-                                            glm::radians(45.0f),                // Angle to rotate
-                                            glm::vec3(0.0f, 0.0f, 1.0f));       // Axis to rotate around
-
-
-//        matModel = matModel * matRoationZ;
-
-//        glm::mat4 matRoationY = glm::rotate(glm::mat4(1.0f), 
-//                                            glm::radians(45.0f),                // Angle to rotate
-//                                            glm::vec3(0.0f, 1.0f, 0.0f));       // Axis to rotate around
-
-        glm::mat4 matRoationY = glm::rotate(glm::mat4(1.0f), 
-                                            (float)glfwGetTime(),                // Angle to rotate
-                                            glm::vec3(0.0f, 1.0f, 0.0f));       // Axis to rotate around
-
-        matModel = matModel * matRoationY;
-
-        glm::mat4 matRoationX = glm::rotate(glm::mat4(1.0f), 
-                                            glm::radians(45.0f),                // Angle to rotate
-                                            glm::vec3(1.0f, 0.0f, 0.0f));       // Axis to rotate around
-
-
-//        matModel = matModel * matRoationX;
-
-
-
-//        mat4x4_rotate_Z(m, m, (float)glfwGetTime());
-//        mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
-        matProjection = glm::perspective(0.6f,
-                             ratio,
-                             0.1f,
-                             1000.0f);
-
-
-        //glm::vec3 cameraEye = glm::vec3(0.0, 0.0, -4.0f);
-        //glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
         glm::vec3 upVector = glm::vec3(0.0f, 1.0f, 0.0f);
 
         matView = glm::lookAt(::g_cameraEye,
-                        ::g_cameraTarget,
-                        upVector);
-
-//        mat4x4_mul(mvp, p, m);
-        mvp = matProjection * matView * matModel;
+                              ::g_cameraTarget,
+                              upVector);
 
 
-        //glUseProgram(program);
+    //        mat4x4_rotate_Z(m, m, (float)glfwGetTime());
+    //        mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
+        matProjection = glm::perspective(
+            0.6f,       // Field of view (in degress, more or less 180)
+            ratio,
+            0.1f,       // Near plane (make this as LARGE as possible)
+            1000.0f);   // Far plane (make this as SMALL as possible)
+                        // 6-8 digits of precision
 
-        glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(mvp));
-
-        glPointSize(15.0f);
-
-//        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);      // GL_POINT, GL_LINE
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);      // GL_POINT, GL_LINE
+//        glm::ortho(
 
 
-        // Choose the VAO that has the model we want to draw...
 
-//        if ( pVAOManager->FindDrawInfoByModelName("MOTO", drawingInformation) )
-
-//        for ( unsigned int index = 0; index != numberOfObjectsToDraw; index++ )
-
-//        for ( unsigned int index = 0; index != vec_pMeshObjects.size(); index++ )
-
-        //std::vector< cMeshObject* > vec_pMeshObjects;
+        //    ____  _             _            __                           
+        //   / ___|| |_ __ _ _ __| |_    ___  / _|  ___  ___ ___ _ __   ___ 
+        //   \___ \| __/ _` | '__| __|  / _ \| |_  / __|/ __/ _ \ '_ \ / _ \
+        //    ___) | || (_| | |  | |_  | (_) |  _| \__ \ (_|  __/ | | |  __/
+        //   |____/ \__\__,_|_|   \__|  \___/|_|   |___/\___\___|_| |_|\___|
+        //                                                                  
+        // We draw everything in our "scene"
+        // In other words, go throug the vec_pMeshObjects container
+        //  and draw each one of the objects 
         for ( std::vector< cMeshObject* >::iterator itCurrentMesh = vec_pMeshObjects.begin(); 
-             itCurrentMesh != vec_pMeshObjects.end(); 
-             itCurrentMesh++ )
+              itCurrentMesh != vec_pMeshObjects.end();
+              itCurrentMesh++ )
         {
-
-            sModelDrawInfo drawingInformation;
-//        if ( pVAOManager->FindDrawInfoByModelName(pObjectToDraw->meshName, drawingInformation) )
-
-//            if ( pVAOManager->FindDrawInfoByModelName(my_pMeshes[index]->meshName, drawingInformation) )
-//            if ( pVAOManager->FindDrawInfoByModelName(vec_pMeshObjects[index]->meshName, drawingInformation) )
-//            if ( pVAOManager->FindDrawInfoByModelName( (*itCurrentMesh)->meshName, drawingInformation) )
-                
             cMeshObject* pCurrentMeshObject = *itCurrentMesh;        // * is the iterator access thing
 
+    // 
+            // Don't draw any "back facing" triangles
+            glCullFace(GL_BACK);
+
+            // Turn on depth buffer test at draw time
+            glEnable(GL_DEPTH_TEST);
+
+            // Make an "identity matrix"
+     //       mat4x4_identity(m);
+            matModel = glm::mat4x4(1.0f);  // identity matrix
+
+            // Move the object 
+            glm::mat4 matTranslation = glm::translate(glm::mat4(1.0f),
+                                                      glm::vec3(10.0f, 0.0f, 0.0f));
+
+            // Rotate the object
+            glm::mat4 matRoationZ = glm::rotate(glm::mat4(1.0f), 
+                                                glm::radians(45.0f),                // Angle to rotate
+                                                glm::vec3(0.0f, 0.0f, 1.0f));       // Axis to rotate around
+
+            glm::mat4 matRoationY = glm::rotate(glm::mat4(1.0f), 
+                                                (float)glfwGetTime(),                // Angle to rotate
+                                                glm::vec3(0.0f, 1.0f, 0.0f));       // Axis to rotate around
+
+            glm::mat4 matRoationX = glm::rotate(glm::mat4(1.0f), 
+                                                glm::radians(45.0f),                // Angle to rotate
+                                                glm::vec3(1.0f, 0.0f, 0.0f));       // Axis to rotate around
+
+            // Scale the object
+            glm::mat4 matScale = glm::scale(glm::mat4(1.0f),
+                                            glm::vec3(0.1f, 0.1f, 0.1f));
+
+
+            matModel = matModel * matRoationY;
+
+
+
+    //        mat4x4_mul(mvp, p, m);
+            mvp = matProjection * matView * matModel;
+
+
+            //glUseProgram(program);
+
+            glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(mvp));
+
+            glPointSize(15.0f);
+
+    //        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);      // GL_POINT, GL_LINE
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);      // GL_POINT, GL_LINE
+
+
+            // Choose the VAO that has the model we want to draw...
+            sModelDrawInfo drawingInformation;
             if ( pVAOManager->FindDrawInfoByModelName(pCurrentMeshObject->meshName, drawingInformation) )
             {
                 glBindVertexArray(drawingInformation.VAO_ID);
@@ -897,7 +884,14 @@ int main( int argc, char* argv[] )
                 std::cout << "Error: didn't find model to draw." << std::endl;
 
             }//if ( pVAOManager...
+
         }//for ( unsigned int index
+        //    _____           _          __                           
+        //   | ____|_ __   __| |   ___  / _|  ___  ___ ___ _ __   ___ 
+        //   |  _| | '_ \ / _` |  / _ \| |_  / __|/ __/ _ \ '_ \ / _ \
+        //   | |___| | | | (_| | | (_) |  _| \__ \ (_|  __/ | | |  __/
+        //   |_____|_| |_|\__,_|  \___/|_|   |___/\___\___|_| |_|\___|
+        //                                                            
 
 
         glfwSwapBuffers(window);

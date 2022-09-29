@@ -192,9 +192,9 @@ void Lambda(void)
 	std::vector< cMeshObject > myObjects;
 
 
-	std::vector< cMeshObject >::iterator itHelloKitty
-		= std::find_if(myObjects.begin(), myObjects.end(), 
-					   
+//	std::vector< cMeshObject >::iterator itHelloKitty
+//		= std::find_if(myObjects.begin(), myObjects.end(), 
+//					   
 //		bool FindHelloKitty(const cMeshObject & theObject)
 //		{
 //			if (theObject.friendlyName == "Hello Kitty")
@@ -203,8 +203,8 @@ void Lambda(void)
 //			}
 //			return false;
 //		}
-					   
-	);
+//					   
+//	);
 
 
 
