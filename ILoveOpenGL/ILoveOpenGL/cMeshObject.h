@@ -20,9 +20,13 @@ public:
 
 	glm::vec3 position;     // 0,0,0 (origin)
 	glm::vec3 rotation;     // 0,0,0 ration around each Euler axis
-    glm::vec4 colour;		// 0,0,0,1 (black)
 	float scale;
     bool isWireframe;		// false
+
+    glm::vec4 RGBA_colour;		// RGA & Alpha, 0,0,0,1 (black, with transparency of 1.0)
+	// When true, it will overwrite the vertex colours
+	bool bUse_RGBA_colour; 
+
 
 
 	// Later (after mid-term)

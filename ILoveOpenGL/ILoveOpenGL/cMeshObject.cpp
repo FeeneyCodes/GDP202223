@@ -17,7 +17,10 @@ cMeshObject::cMeshObject()
 	this->position = glm::vec3(0.0f);    
 	this->rotation = glm::vec3(0.0f);
 	// RGB and "alpha" (A) 0.0f = transparent
-	this->colour = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 	this->scale = 1.0f;
 	this->isWireframe = false;
+
+	// This will mainly be used for non-lit debug objects, eventually
+	this->RGBA_colour = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+	this->bUse_RGBA_colour = false;
 }

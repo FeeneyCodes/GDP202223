@@ -658,19 +658,29 @@ int main( int argc, char* argv[] )
 
     cMeshObject* pBunnyObjectToDraw1 = new cMeshObject();
     pBunnyObjectToDraw1->meshName = "Bunny";
-    pBunnyObjectToDraw1->position = glm::vec3(0.0f, -5.0f, 0.0f);
+    pBunnyObjectToDraw1->friendlyName = "Bugs";         // Google "Bugs Bunny"
+    pBunnyObjectToDraw1->position = glm::vec3(0.0f, -2.0f, 0.0f);
+    pBunnyObjectToDraw1->scale = 4.0f;
 
     cMeshObject* pBunnyObjectToDraw2 = new cMeshObject();
     pBunnyObjectToDraw2->meshName = "Bunny";
-    pBunnyObjectToDraw2->position = glm::vec3(10.0f, -5.0f, 0.0f);
+    pBunnyObjectToDraw2->position = glm::vec3(2.0f, -2.0f, 0.0f);
+    pBunnyObjectToDraw2->scale = 10.0f;
 
     cMeshObject* pSpaceShip = new cMeshObject();
     pSpaceShip->meshName = "BirdOfPrey";
 
     cMeshObject* pSubmarine = new cMeshObject();
     pSubmarine->meshName = "Submarine";
-    pSubmarine->position = glm::vec3(0.0f, 0.0f, 100.0f);
+    pSubmarine->position = glm::vec3(10.0f, -100.0f, 0.0f);
     pSubmarine->scale = 0.1f;
+    pSubmarine->rotation.y = glm::radians(-15.0f);
+
+    cMeshObject* pYellowSubmarine = new cMeshObject();
+    pYellowSubmarine->meshName = "Submarine";
+    pYellowSubmarine->friendlyName = "Yellow Submarine";    // Google "Yellow Submarine" to see what drugs in the 60s were like.
+    pYellowSubmarine->bUse_RGBA_colour = true;
+    pYellowSubmarine->RGBA_colour = glm::vec4(0.0f, 1.0f, 1.0f, 1.0f);
 
 
 //    // Add all these to an array:
@@ -691,11 +701,13 @@ int main( int argc, char* argv[] )
     std::vector< cMeshObject* > vec_pMeshObjects;
 
 
-    //vec_pMeshObjects.push_back(pObjectToDraw);          // "MOTO"
-    //vec_pMeshObjects.push_back(pBunnyObjectToDraw1);    // "Bunny"
-    //vec_pMeshObjects.push_back(pBunnyObjectToDraw2);    // "Bunny"
-    //vec_pMeshObjects.push_back(pSpaceShip);    // "BirdOfPrey"
+    vec_pMeshObjects.push_back(pObjectToDraw);          // "MOTO"
+    vec_pMeshObjects.push_back(pBunnyObjectToDraw1);    // "Bunny"
+    vec_pMeshObjects.push_back(pBunnyObjectToDraw2);    // "Bunny"
+    vec_pMeshObjects.push_back(pSpaceShip);    // "BirdOfPrey"
     vec_pMeshObjects.push_back(pSubmarine);    // "BirdOfPrey"
+    vec_pMeshObjects.push_back(pYellowSubmarine);    // "BirdOfPrey"
+
 
 
 /*  We could also make this on the stack in this way:
@@ -787,7 +799,7 @@ int main( int argc, char* argv[] )
             0.6f,       // Field of view (in degress, more or less 180)
             ratio,
             0.1f,       // Near plane (make this as LARGE as possible)
-            1000.0f);   // Far plane (make this as SMALL as possible)
+            10000.0f);   // Far plane (make this as SMALL as possible)
                         // 6-8 digits of precision
 
 //        glm::ortho(
@@ -822,32 +834,47 @@ int main( int argc, char* argv[] )
 
             // Move the object 
             glm::mat4 matTranslation = glm::translate(glm::mat4(1.0f),
-                                                      glm::vec3(10.0f, 0.0f, 0.0f));
+                                                      pCurrentMeshObject->position);
 
             // Rotate the object
             glm::mat4 matRoationZ = glm::rotate(glm::mat4(1.0f), 
-                                                glm::radians(45.0f),                // Angle to rotate
+                                                pCurrentMeshObject->rotation.z,                // Angle to rotate
                                                 glm::vec3(0.0f, 0.0f, 1.0f));       // Axis to rotate around
 
             glm::mat4 matRoationY = glm::rotate(glm::mat4(1.0f), 
-                                                (float)glfwGetTime(),                // Angle to rotate
+                                                pCurrentMeshObject->rotation.y,                // Angle to rotate
                                                 glm::vec3(0.0f, 1.0f, 0.0f));       // Axis to rotate around
 
             glm::mat4 matRoationX = glm::rotate(glm::mat4(1.0f), 
-                                                glm::radians(45.0f),                // Angle to rotate
+                                                pCurrentMeshObject->rotation.x,                // Angle to rotate
                                                 glm::vec3(1.0f, 0.0f, 0.0f));       // Axis to rotate around
 
             // Scale the object
+            float uniformScale = pCurrentMeshObject->scale;
             glm::mat4 matScale = glm::scale(glm::mat4(1.0f),
-                                            glm::vec3(0.1f, 0.1f, 0.1f));
+                                            glm::vec3(uniformScale, uniformScale, uniformScale));
 
+            // Applying all these transformations to the MODEL 
+            // (or "world" matrix)
+            matModel = matModel * matTranslation;
 
+            matModel = matModel * matRoationX;
             matModel = matModel * matRoationY;
+            matModel = matModel * matRoationZ;
 
+            matModel = matModel * matScale;
+
+//            matModel = 
+//                 matModel
+//               * matTranslation
+//               * matRoationX
+//               * matRoationY
+//               * matRoationZ
+//               * matScale;
 
 
     //        mat4x4_mul(mvp, p, m);
-            mvp = matProjection * matView * matModel;
+            mvp = matProjection * matView * matModel;;
 
 
             //glUseProgram(program);
@@ -858,6 +885,31 @@ int main( int argc, char* argv[] )
 
     //        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);      // GL_POINT, GL_LINE
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);      // GL_POINT, GL_LINE
+
+
+            // Setting the colour in the shader
+            // uniform vec4 RGBA_Colour;
+
+            GLint RGBA_Colour_ULocID = glGetUniformLocation(shaderID, "RGBA_Colour");
+
+            glUniform4f(RGBA_Colour_ULocID,
+                        pCurrentMeshObject->RGBA_colour.r,
+                        pCurrentMeshObject->RGBA_colour.g,
+                        pCurrentMeshObject->RGBA_colour.b,
+                        pCurrentMeshObject->RGBA_colour.w);
+
+
+            GLint bUseRGBA_Colour_ULocID = glGetUniformLocation(shaderID, "bUseRGBA_Colour");
+
+            if ( pCurrentMeshObject->bUse_RGBA_colour )
+            {
+                glUniform1f(bUseRGBA_Colour_ULocID, (GLfloat)GL_TRUE );
+            }
+            else
+            {
+                glUniform1f(bUseRGBA_Colour_ULocID, (GLfloat)GL_FALSE);
+            }
+
 
 
             // Choose the VAO that has the model we want to draw...
