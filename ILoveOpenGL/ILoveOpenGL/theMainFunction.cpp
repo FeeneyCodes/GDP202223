@@ -302,6 +302,7 @@ bool LoadThePLYFile(std::string filename, sModelDrawInfo &modelDrawInfo)
     // Now copy the information from the PLY infomation to the model draw info structure
     for ( unsigned int index = 0; index != modelDrawInfo.numberOfVertices; index++ )
     {
+        // To The Shader                        From the file
         modelDrawInfo.pVertices[index].x = pTheModelArray[index].x;
         modelDrawInfo.pVertices[index].y = pTheModelArray[index].y;
         modelDrawInfo.pVertices[index].z = pTheModelArray[index].z;
@@ -309,6 +310,12 @@ bool LoadThePLYFile(std::string filename, sModelDrawInfo &modelDrawInfo)
         modelDrawInfo.pVertices[index].r = pTheModelArray[index].red;
         modelDrawInfo.pVertices[index].g = pTheModelArray[index].green;
         modelDrawInfo.pVertices[index].b = pTheModelArray[index].blue;
+
+        // Copy the normal information we loaded, too! :)
+        modelDrawInfo.pVertices[index].nx = pTheModelArray[index].nx;
+        modelDrawInfo.pVertices[index].ny = pTheModelArray[index].ny;
+        modelDrawInfo.pVertices[index].nz = pTheModelArray[index].nz;
+
     }
 
     modelDrawInfo.numberOfIndices = modelDrawInfo.numberOfTriangles * 3;
@@ -681,7 +688,7 @@ int main( int argc, char* argv[] )
     pYellowSubmarine->friendlyName = "Yellow Submarine";    // Google "Yellow Submarine" to see what drugs in the 60s were like.
     pYellowSubmarine->bUse_RGBA_colour = true;
     pYellowSubmarine->RGBA_colour = glm::vec4(1.0f, 0.0f, 1.0f, 1.0f);
-    pYellowSubmarine->isWireframe = true;
+//    pYellowSubmarine->isWireframe = true;
 
 
 //    // Add all these to an array:
@@ -767,13 +774,50 @@ int main( int argc, char* argv[] )
     // uniform mat4 mModel;
     // uniform mat4 mView;
     // uniform mat4 mProjection;
-    GLint mModel_location = glGetUniformLocation(shaderID, "mModel");       // program
-    GLint mView_location = glGetUniformLocation(shaderID, "mView");       // program
-    GLint mProjection_location = glGetUniformLocation(shaderID, "mProjection");       // program
+    GLint mModel_location = glGetUniformLocation(shaderID, "mModel");      
+    GLint mView_location = glGetUniformLocation(shaderID, "mView");      
+    GLint mProjection_location = glGetUniformLocation(shaderID, "mProjection");       
+    // Need this for lighting
+    GLint mModelInverseTransform_location = glGetUniformLocation(shaderID, "mModelInverseTranspose");      
 
+    // Set the light information for light #0
+    GLint light_0_position_UL = glGetUniformLocation(shaderID, "theLights[0].position");
+    GLint light_0_diffuse_UL = glGetUniformLocation(shaderID, "theLights[0].diffuse");
+    GLint light_0_specular_UL = glGetUniformLocation(shaderID, "theLights[0].specular");
+    GLint light_0_atten_UL = glGetUniformLocation(shaderID, "theLights[0].atten");
+    GLint light_0_direction_UL = glGetUniformLocation(shaderID, "theLights[0].direction");
+    GLint light_0_param1_UL = glGetUniformLocation(shaderID, "theLights[0].param1");
+    GLint light_0_param2_UL = glGetUniformLocation(shaderID, "theLights[0].param2");
+
+
+    glUniform4f( light_0_position_UL, 20.0f, 40.0f, -20.0f, 1.0f );
+    glUniform4f( light_0_diffuse_UL, 1.0f, 1.0f, 1.0f, 1.0f );
+    glUniform4f( light_0_specular_UL, 1.0f, 1.0f, 1.0f, 1.0f );
+    glUniform4f( light_0_atten_UL, 0.1f, 0.001f, 0.0f, 1.0f);
+    glUniform4f( light_0_direction_UL, 0.0f, 0.0f, 0.0f, 1.0f);
+    glUniform4f( light_0_param1_UL, 0.0f /*point light*/, 0.0f, 0.0f, 1.0f);
+    // Turn the light on
+    glUniform4f( light_0_param2_UL, 1.0f, 0.0f, 0.0f, 1.0f);
+
+    glm::vec3 lightPosition = glm::vec3(-30.0f, 50.0f, 0.0f);
+    glUniform4f( light_0_position_UL, 
+                lightPosition.x,
+                lightPosition.y,
+                lightPosition.z, 
+                1.0f);
 
     while ( ! glfwWindowShouldClose(window) )
     {
+        // HACK
+        lightPosition.x += 0.05f;
+        glUniform4f(light_0_position_UL,
+                    lightPosition.x,
+                    lightPosition.y,
+                    lightPosition.z,
+                    1.0f);
+
+
+
         float ratio;
         int width, height;
 //        mat4x4 m, p, mvp;
@@ -893,7 +937,11 @@ int main( int argc, char* argv[] )
             glUniformMatrix4fv(mModel_location, 1, GL_FALSE, glm::value_ptr(matModel));
             glUniformMatrix4fv(mView_location, 1, GL_FALSE, glm::value_ptr(matView));
             glUniformMatrix4fv(mProjection_location, 1, GL_FALSE, glm::value_ptr(matProjection));
-                
+            
+            // Inverse transpose of a 4x4 matrix removes the right column and lower row
+            // Leaving only the rotation (the upper left 3x3 matrix values)
+            glm::mat4 mModelInverseTransform = glm::inverse(glm::transpose(matModel));
+            glUniformMatrix4fv(mModelInverseTransform_location, 1, GL_FALSE, glm::value_ptr(mModelInverseTransform));
 
 //            glPointSize(15.0f);
 

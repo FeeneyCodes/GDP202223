@@ -98,19 +98,26 @@ bool cVAOManager::LoadModelIntoVAO(
 
 	GLint vpos_location = glGetAttribLocation(shaderProgramID, "vPos");	// program
 	GLint vcol_location = glGetAttribLocation(shaderProgramID, "vCol");	// program;
+	GLint vNormal_location = glGetAttribLocation(shaderProgramID, "vNormal");	// program;
 
 	// Set the vertex attributes for this shader
-	glEnableVertexAttribArray(vpos_location);	// vPos
+	glEnableVertexAttribArray(vpos_location);		// vPos
 	glVertexAttribPointer( vpos_location, 3,		// vPos
 						   GL_FLOAT, GL_FALSE,
-						   sizeof(float) * 6, 
-						   ( void* )0);
+						   sizeof(sVertex),						// Stride	(number of bytes)
+						   ( void* ) offsetof(sVertex, x) );		// Offset the member variable
 
-	glEnableVertexAttribArray(vcol_location);	// vCol
+	glEnableVertexAttribArray(vcol_location);		// vCol
 	glVertexAttribPointer( vcol_location, 3,		// vCol
 						   GL_FLOAT, GL_FALSE,
-						   sizeof(float) * 6, 
-						   ( void* )( sizeof(float) * 3 ));
+						  sizeof(sVertex),			// Stride
+						  (void*)offsetof(sVertex, r) );
+
+	glEnableVertexAttribArray(vNormal_location);		// vNormal
+	glVertexAttribPointer(vNormal_location, 3,		// vNormal
+						   GL_FLOAT, GL_FALSE,
+						  sizeof(sVertex),			// Stride
+						  (void*)offsetof(sVertex, nx) );
 
 	// Now that all the parts are set up, set the VAO to zero
 	glBindVertexArray(0);
@@ -120,6 +127,7 @@ bool cVAOManager::LoadModelIntoVAO(
 
 	glDisableVertexAttribArray(vpos_location);
 	glDisableVertexAttribArray(vcol_location);
+	glDisableVertexAttribArray(vNormal_location);
 
 
 	// Store the draw information into the map

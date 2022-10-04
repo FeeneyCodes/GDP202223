@@ -14,6 +14,7 @@ struct sVertex
 {
 	float x, y, z;		
 	float r, g, b;
+	float nx, ny, nz;	// And normals, too!! :) 
 };
 
 
