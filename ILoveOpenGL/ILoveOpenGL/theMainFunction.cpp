@@ -793,7 +793,7 @@ int main( int argc, char* argv[] )
     glUniform4f( light_0_position_UL, 20.0f, 40.0f, -20.0f, 1.0f );
     glUniform4f( light_0_diffuse_UL, 1.0f, 1.0f, 1.0f, 1.0f );
     glUniform4f( light_0_specular_UL, 1.0f, 1.0f, 1.0f, 1.0f );
-    glUniform4f( light_0_atten_UL, 0.1f, 0.001f, 0.0f, 1.0f);
+    glUniform4f( light_0_atten_UL, 0.1f, 0.01f, 0.0f, 1.0f);
     glUniform4f( light_0_direction_UL, 0.0f, 0.0f, 0.0f, 1.0f);
     glUniform4f( light_0_param1_UL, 0.0f /*point light*/, 0.0f, 0.0f, 1.0f);
     // Turn the light on
@@ -842,6 +842,13 @@ int main( int argc, char* argv[] )
         matView = glm::lookAt(::g_cameraEye,
                               ::g_cameraTarget,
                               upVector);
+
+        // Pass eye location to the shader
+        // uniform vec4 eyeLocation;
+        GLint eyeLocation_UniLoc = glGetUniformLocation(shaderID, "eyeLocation");
+
+        glUniform4f(eyeLocation_UniLoc,
+                    ::g_cameraEye.x, ::g_cameraEye.y, ::g_cameraEye.z, 1.0f);
 
 
     //        mat4x4_rotate_Z(m, m, (float)glfwGetTime());
