@@ -39,13 +39,13 @@ const int NUMBEROFLIGHTS = 10;
 uniform sLight theLights[NUMBEROFLIGHTS];  	// 80 uniforms
 
 
-vec4 calcualteLightContrib( vec3 vertexMaterialColour, vec3 vertexNormal, 
+vec4 calculateLightContrib( vec3 vertexMaterialColour, vec3 vertexNormal, 
                             vec3 vertexWorldPos, vec4 vertexSpecular );
 	 
 void main()  
 {
 
-	vec4 outColour = calcualteLightContrib( materialColour.rgb, fNormal.xyz, 
+	vec4 outColour = calculateLightContrib( materialColour.rgb, fNormal.xyz, 
 	                                        fVertWorldLocation.xyz, specularColour );
 
 											
@@ -56,7 +56,7 @@ void main()
 
 
 
-vec4 calcualteLightContrib( vec3 vertexMaterialColour, vec3 vertexNormal, 
+vec4 calculateLightContrib( vec3 vertexMaterialColour, vec3 vertexNormal, 
                             vec3 vertexWorldPos, vec4 vertexSpecular )
 {
 	vec3 norm = normalize(vertexNormal);
