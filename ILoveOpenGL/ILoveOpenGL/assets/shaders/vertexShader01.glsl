@@ -6,9 +6,10 @@ in vec3 vPos;
 
 out vec3 colour;			// varying
 
-uniform mat4 MVP;
-
-
+//uniform mat4 MVP;
+uniform mat4 mModel;
+uniform mat4 mView;
+uniform mat4 mProjection;
 
 void main()
 {
@@ -19,6 +20,8 @@ void main()
 	
 	// Output is in screen space 
 	// x & y are in (normalized) screen space, z is the depth from the camera
-	gl_Position = MVP * vec4(vertPosition, 1.0f);
+	mat4 mMVP = mProjection * mView * mModel;
+	
+	gl_Position = mMVP * vec4(vertPosition, 1.0f);
 	colour = vCol;
 }

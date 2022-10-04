@@ -509,7 +509,7 @@ int main( int argc, char* argv[] )
 
     GLuint shaderID = 0;
 
-    GLint mvp_location = 0;
+//    GLint mvp_location = 0;
     GLint vpos_location = 0;
     GLint vcol_location = 0;
 
@@ -672,7 +672,7 @@ int main( int argc, char* argv[] )
 
     cMeshObject* pSubmarine = new cMeshObject();
     pSubmarine->meshName = "Submarine";
-    pSubmarine->position = glm::vec3(10.0f, -100.0f, 0.0f);
+    pSubmarine->position = glm::vec3(10.0f, 0.0f, 0.0f);
     pSubmarine->scale = 0.1f;
     pSubmarine->rotation.y = glm::radians(-15.0f);
 
@@ -680,7 +680,8 @@ int main( int argc, char* argv[] )
     pYellowSubmarine->meshName = "Submarine";
     pYellowSubmarine->friendlyName = "Yellow Submarine";    // Google "Yellow Submarine" to see what drugs in the 60s were like.
     pYellowSubmarine->bUse_RGBA_colour = true;
-    pYellowSubmarine->RGBA_colour = glm::vec4(0.0f, 1.0f, 1.0f, 1.0f);
+    pYellowSubmarine->RGBA_colour = glm::vec4(1.0f, 0.0f, 1.0f, 1.0f);
+    pYellowSubmarine->isWireframe = true;
 
 
 //    // Add all these to an array:
@@ -762,7 +763,13 @@ int main( int argc, char* argv[] )
  //                         (void*) offsetof(sVertex_XYZ_RGB, r)); //  (sizeof(float) * 3));
 
 
-    mvp_location = glGetUniformLocation(shaderID, "MVP");       // program
+    GLint mvp_location = glGetUniformLocation(shaderID, "MVP");       // program
+    // uniform mat4 mModel;
+    // uniform mat4 mView;
+    // uniform mat4 mProjection;
+    GLint mModel_location = glGetUniformLocation(shaderID, "mModel");       // program
+    GLint mView_location = glGetUniformLocation(shaderID, "mView");       // program
+    GLint mProjection_location = glGetUniformLocation(shaderID, "mProjection");       // program
 
 
     while ( ! glfwWindowShouldClose(window) )
@@ -774,7 +781,7 @@ int main( int argc, char* argv[] )
         glm::mat4x4 matProjection;
         glm::mat4x4 matView; 
 
-        glm::mat4x4 mvp;            // Model-View-Projection
+//        glm::mat4x4 mvp;            // Model-View-Projection
 
         glfwGetFramebufferSize(window, &width, &height);
         ratio = width / (float)height;
@@ -874,17 +881,31 @@ int main( int argc, char* argv[] )
 
 
     //        mat4x4_mul(mvp, p, m);
-            mvp = matProjection * matView * matModel;;
+//            mvp = matProjection * matView * matModel;
+//            glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(mvp));
 
+            // uniform mat4 mModel;
+            // uniform mat4 mView;
+            // uniform mat4 mProjection;
+            //GLint mModel_location = glGetUniformLocation(shaderID, "mModel");       // program
+            //GLint mView_location = glGetUniformLocation(shaderID, "mView");       // program
+            //GLint mProjection_location = glGetUniformLocation(shaderID, "mProjection");       // program
+            glUniformMatrix4fv(mModel_location, 1, GL_FALSE, glm::value_ptr(matModel));
+            glUniformMatrix4fv(mView_location, 1, GL_FALSE, glm::value_ptr(matView));
+            glUniformMatrix4fv(mProjection_location, 1, GL_FALSE, glm::value_ptr(matProjection));
+                
 
-            //glUseProgram(program);
+//            glPointSize(15.0f);
 
-            glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(mvp));
-
-            glPointSize(15.0f);
-
-    //        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);      // GL_POINT, GL_LINE
-            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);      // GL_POINT, GL_LINE
+            // Wireframe
+            if ( pCurrentMeshObject->isWireframe )
+            {
+                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);      // GL_POINT, GL_LINE, GL_FILL
+            }
+            else 
+            {
+                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);      
+            }
 
 
             // Setting the colour in the shader
