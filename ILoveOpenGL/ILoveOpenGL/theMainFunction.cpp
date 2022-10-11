@@ -28,6 +28,8 @@
 
 #include "cVAOManager/cVAOManager.h"
 
+#include "cLightHelper.h"
+
 
 // This is all now part of the VAO manager
 // 
@@ -109,55 +111,15 @@ glm::vec3 g_cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
 //"    gl_FragColor = vec4(color, 1.0);\n"
 //"}\n";
 
+// Call back signatures here
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+
 static void error_callback(int error, const char* description)
 {
     fprintf(stderr, "Error: %s\n", description);
 }
 
-static void key_callback(GLFWwindow* window, 
-                         int key, int scancode, 
-                         int action, int mods)
-{
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-    {
-        glfwSetWindowShouldClose(window, GLFW_TRUE);
-    }
 
-    // Move the camera
-    // AWSD   AD - left and right
-    //        WS - forward and back
-    const float CAMERA_MOVE_SPEED = 0.1f;
-    if (key == GLFW_KEY_A )     // Left
-    {
-        ::g_cameraEye.x -= CAMERA_MOVE_SPEED;
-    }
-    if (key == GLFW_KEY_D )     // Right
-    {
-        ::g_cameraEye.x += CAMERA_MOVE_SPEED;
-    }
-    if (key == GLFW_KEY_W )     // Forward
-    {
-        ::g_cameraEye.z += CAMERA_MOVE_SPEED;
-    }
-    if (key == GLFW_KEY_S )     // Backwards
-    {
-        ::g_cameraEye.z -= CAMERA_MOVE_SPEED;
-    }
-    if (key == GLFW_KEY_Q )     // Down
-    {
-        ::g_cameraEye.y -= CAMERA_MOVE_SPEED;
-    }
-    if (key == GLFW_KEY_E )     // Up
-    {
-        ::g_cameraEye.y += CAMERA_MOVE_SPEED;
-    }
-
-    if ( key == GLFW_KEY_1 )
-    {
-        ::g_cameraEye = glm::vec3(-5.5f, -3.4f, 15.0f); 
-    }
-
-}
 // From here: https://stackoverflow.com/questions/5289613/generate-random-float-between-two-floats/5289624
 
 float RandomFloat(float a, float b) {
@@ -605,6 +567,47 @@ int main( int argc, char* argv[] )
 
 
 
+    ::g_pTheLightManager = new cLightManager();
+
+    cLightHelper* pLightHelper = new cLightHelper();
+
+// Set up the uniform variable (from the shader
+    ::g_pTheLightManager->LoadLightUniformLocations(shaderID);
+
+    // Set the light information for light #0
+//    GLint light_0_position_UL = glGetUniformLocation(shaderID, "theLights[0].position");
+//    GLint light_0_diffuse_UL = glGetUniformLocation(shaderID, "theLights[0].diffuse");
+//    GLint light_0_specular_UL = glGetUniformLocation(shaderID, "theLights[0].specular");
+//    GLint light_0_atten_UL = glGetUniformLocation(shaderID, "theLights[0].atten");
+//    GLint light_0_direction_UL = glGetUniformLocation(shaderID, "theLights[0].direction");
+//    GLint light_0_param1_UL = glGetUniformLocation(shaderID, "theLights[0].param1");
+//    GLint light_0_param2_UL = glGetUniformLocation(shaderID, "theLights[0].param2");
+
+    ::g_pTheLightManager->vecTheLights[0].position = glm::vec4(10.0f, 10.0f, 0.0f, 1.0f);
+    ::g_pTheLightManager->vecTheLights[0].diffuse = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+    ::g_pTheLightManager->vecTheLights[0].atten = glm::vec4(0.1f, 0.01f, 0.000000001f, 1.0f);
+
+//    ::g_pTheLightManager->vecTheLights[0].param2.x = 1.0f;
+    ::g_pTheLightManager->vecTheLights[0].TurnOn();
+
+//    glUniform4f(light_0_position_UL, 20.0f, 40.0f, -20.0f, 1.0f);
+//    glUniform4f(light_0_diffuse_UL, 1.0f, 1.0f, 1.0f, 1.0f);
+//    glUniform4f(light_0_specular_UL, 1.0f, 1.0f, 1.0f, 1.0f);
+//    glUniform4f(light_0_atten_UL, 0.1f, 0.01f, 0.0f, 1.0f);
+//    glUniform4f(light_0_direction_UL, 0.0f, 0.0f, 0.0f, 1.0f);
+//    glUniform4f(light_0_param1_UL, 0.0f /*point light*/, 0.0f, 0.0f, 1.0f);
+//    // Turn the light on
+//    glUniform4f(light_0_param2_UL, 1.0f, 0.0f, 0.0f, 1.0f);
+//
+//    glm::vec3 lightPosition = glm::vec3(-30.0f, 50.0f, 0.0f);
+//    glUniform4f(light_0_position_UL,
+//                lightPosition.x,
+//                lightPosition.y,
+//                lightPosition.z,
+//                1.0f);
+
+
+
     // Load the models
     cVAOManager* pVAOManager = new cVAOManager();
 
@@ -691,6 +694,8 @@ int main( int argc, char* argv[] )
 //    pYellowSubmarine->isWireframe = true;
 
 
+
+
 //    // Add all these to an array:
 //    cMeshObject* my_pMeshes[10];
 //    my_pMeshes[0] = pObjectToDraw;          // "MOTO"
@@ -716,6 +721,28 @@ int main( int argc, char* argv[] )
     vec_pMeshObjects.push_back(pSubmarine);    // "BirdOfPrey"
     vec_pMeshObjects.push_back(pYellowSubmarine);    // "BirdOfPrey"
 
+
+    cMeshObject* pDebugSphere_1 = new cMeshObject();
+    pDebugSphere_1->meshName = "ISO_Sphere_1";
+    pDebugSphere_1->friendlyName = "Debug Sphere 1";
+    pDebugSphere_1->bUse_RGBA_colour = true;
+    pDebugSphere_1->RGBA_colour = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+    pDebugSphere_1->isWireframe = true;
+    pDebugSphere_1->scale = 1.0f;
+
+    pDebugSphere_1->bDoNotLight = true;
+
+    vec_pMeshObjects.push_back(pDebugSphere_1);
+
+    cMeshObject* pDebugSphere_2 = new cMeshObject();
+    pDebugSphere_2->meshName = "ISO_Sphere_1";
+    pDebugSphere_2->friendlyName = "Debug Sphere 1";
+    pDebugSphere_2->bUse_RGBA_colour = true;
+    pDebugSphere_2->RGBA_colour = glm::vec4(1.0f, 1.0f, 0.0f, 1.0f);
+    pDebugSphere_2->isWireframe = true;
+    pDebugSphere_2->scale = 1.0f;
+    pDebugSphere_2->bDoNotLight = true;
+    vec_pMeshObjects.push_back(pDebugSphere_2);
 
 
 /*  We could also make this on the stack in this way:
@@ -780,41 +807,35 @@ int main( int argc, char* argv[] )
     // Need this for lighting
     GLint mModelInverseTransform_location = glGetUniformLocation(shaderID, "mModelInverseTranspose");      
 
-    // Set the light information for light #0
-    GLint light_0_position_UL = glGetUniformLocation(shaderID, "theLights[0].position");
-    GLint light_0_diffuse_UL = glGetUniformLocation(shaderID, "theLights[0].diffuse");
-    GLint light_0_specular_UL = glGetUniformLocation(shaderID, "theLights[0].specular");
-    GLint light_0_atten_UL = glGetUniformLocation(shaderID, "theLights[0].atten");
-    GLint light_0_direction_UL = glGetUniformLocation(shaderID, "theLights[0].direction");
-    GLint light_0_param1_UL = glGetUniformLocation(shaderID, "theLights[0].param1");
-    GLint light_0_param2_UL = glGetUniformLocation(shaderID, "theLights[0].param2");
 
-
-    glUniform4f( light_0_position_UL, 20.0f, 40.0f, -20.0f, 1.0f );
-    glUniform4f( light_0_diffuse_UL, 1.0f, 1.0f, 1.0f, 1.0f );
-    glUniform4f( light_0_specular_UL, 1.0f, 1.0f, 1.0f, 1.0f );
-    glUniform4f( light_0_atten_UL, 0.1f, 0.01f, 0.0f, 1.0f);
-    glUniform4f( light_0_direction_UL, 0.0f, 0.0f, 0.0f, 1.0f);
-    glUniform4f( light_0_param1_UL, 0.0f /*point light*/, 0.0f, 0.0f, 1.0f);
-    // Turn the light on
-    glUniform4f( light_0_param2_UL, 1.0f, 0.0f, 0.0f, 1.0f);
-
-    glm::vec3 lightPosition = glm::vec3(-30.0f, 50.0f, 0.0f);
-    glUniform4f( light_0_position_UL, 
-                lightPosition.x,
-                lightPosition.y,
-                lightPosition.z, 
-                1.0f);
 
     while ( ! glfwWindowShouldClose(window) )
     {
         // HACK
-        lightPosition.x += 0.05f;
-        glUniform4f(light_0_position_UL,
-                    lightPosition.x,
-                    lightPosition.y,
-                    lightPosition.z,
-                    1.0f);
+//        ::g_pTheLightManager->vecTheLights[0].position.x += 0.05f;
+
+        // Move the debug sphere to where the light #0 is
+        pDebugSphere_1->position = glm::vec3(::g_pTheLightManager->vecTheLights[0].position);
+
+
+
+        float distance10percent =  pLightHelper->calcApproxDistFromAtten(
+            0.1f,  // 10%
+            0.001f,
+            100000.0f,
+            ::g_pTheLightManager->vecTheLights[0].atten.x,
+            ::g_pTheLightManager->vecTheLights[0].atten.y,
+            ::g_pTheLightManager->vecTheLights[0].atten.z);
+
+        pDebugSphere_2->scale = distance10percent;
+
+        ::g_pTheLightManager->CopyLightInformationToShader(shaderID);
+
+//        glUniform4f(light_0_position_UL,
+//                    lightPosition.x,
+//                    lightPosition.y,
+//                    lightPosition.z,
+//                    1.0f);
 
 
 
@@ -986,6 +1007,17 @@ int main( int argc, char* argv[] )
                 glUniform1f(bUseRGBA_Colour_ULocID, (GLfloat)GL_FALSE);
             }
 
+            //uniform bool bDoNotLight;	
+            GLint bDoNotLight_Colour_ULocID = glGetUniformLocation(shaderID, "bDoNotLight");
+
+            if ( pCurrentMeshObject->bDoNotLight )
+            {
+                glUniform1f(bDoNotLight_Colour_ULocID, (GLfloat)GL_TRUE );
+            }
+            else
+            {
+                glUniform1f(bDoNotLight_Colour_ULocID, (GLfloat)GL_FALSE);
+            }
 
 
             // Choose the VAO that has the model we want to draw...
@@ -1032,7 +1064,13 @@ int main( int argc, char* argv[] )
         ssTitle << "Camera (x,y,z): "
             << ::g_cameraEye.x << ", "
             << ::g_cameraEye.y << ", "
-            << ::g_cameraEye.z;
+            << ::g_cameraEye.z
+            << "  Light #0 (xyz): "
+            << ::g_pTheLightManager->vecTheLights[0].position.x << ", "
+            << ::g_pTheLightManager->vecTheLights[0].position.y << ", "
+            << ::g_pTheLightManager->vecTheLights[0].position.z
+            << " linear: " << ::g_pTheLightManager->vecTheLights[0].atten.y
+            << " quad: " << ::g_pTheLightManager->vecTheLights[0].atten.z;
 
         std::string theText = ssTitle.str();
 
@@ -1045,6 +1083,7 @@ int main( int argc, char* argv[] )
 
     // Get rid of stuff
     delete pTheShaderManager;
+    delete ::g_pTheLightManager;
 
     glfwDestroyWindow(window);
 

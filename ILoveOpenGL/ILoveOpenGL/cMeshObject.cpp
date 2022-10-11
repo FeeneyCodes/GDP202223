@@ -23,4 +23,6 @@ cMeshObject::cMeshObject()
 	// This will mainly be used for non-lit debug objects, eventually
 	this->RGBA_colour = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 	this->bUse_RGBA_colour = false;
+
+	this->bDoNotLight = false;
 }

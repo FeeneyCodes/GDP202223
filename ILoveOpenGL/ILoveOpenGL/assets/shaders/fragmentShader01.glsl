@@ -39,7 +39,7 @@ const int POINT_LIGHT_TYPE = 0;
 const int SPOT_LIGHT_TYPE = 1;
 const int DIRECTIONAL_LIGHT_TYPE = 2;
 
-const int NUMBEROFLIGHTS = 1;
+const int NUMBEROFLIGHTS = 2;
 uniform sLight theLights[NUMBEROFLIGHTS];  	// 80 uniforms
 
 vec4 calculateLightContrib( vec3 vertexMaterialColour, vec3 vertexNormal, 
@@ -55,6 +55,14 @@ void main()
 		materialColour = RGBA_Colour.rgb;
 	}
 	
+	
+	if ( bDoNotLight )
+	{
+		// Set the output colour and exit early
+		// (Don't apply the lighting to this)
+		pixelOutputColour = vec4(materialColour.rgb, 1.0f);
+		return;
+	}
 	//gl_FragColor = vec4(finalColour, 1.0f);
 //	pixelOutputColour = vec4(finalColour, 1.0f);	
 //	pixelOutputColour = vec4(fNormal.xyz, 1.0f);
@@ -140,7 +148,7 @@ vec4 calculateLightContrib( vec3 vertexMaterialColour, vec3 vertexNormal,
 		vec3 eyeVector = normalize(eyeLocation.xyz - vertexWorldPos.xyz);
 
 		// To simplify, we are NOT using the light specular value, just the object’s.
-		float objectSpecularPower = vertexSpecular.w; 
+		float objectSpecularPower = vertexSpecular.w;   
 		
 //		lightSpecularContrib = pow( max(0.0f, dot( eyeVector, reflectVector) ), objectSpecularPower )
 //			                   * vertexSpecular.rgb;	//* theLights[lightIndex].Specular.rgb

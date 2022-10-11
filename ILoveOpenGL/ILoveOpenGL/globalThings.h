@@ -5,4 +5,10 @@
 
 #include "cMeshObject.h"
 
+#include "cLightManager.h"
+
+// extern means the variable isn't actually here...
+// ...it's somewhere else (in a .cpp file somewhere)
+extern cLightManager* g_pTheLightManager;
+
 #endif

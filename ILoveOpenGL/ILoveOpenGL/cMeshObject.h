@@ -27,6 +27,7 @@ public:
 	// When true, it will overwrite the vertex colours
 	bool bUse_RGBA_colour; 
 
+	bool bDoNotLight;
 
 
 	// Later (after mid-term)

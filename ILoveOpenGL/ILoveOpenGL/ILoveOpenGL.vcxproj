@@ -137,15 +137,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="cLight.cpp" />
+    <ClCompile Include="cLightHelper.cpp" />
+    <ClCompile Include="cLightManager.cpp" />
     <ClCompile Include="cMeshObject.cpp" />
     <ClCompile Include="cShader.cpp" />
     <ClCompile Include="cShaderManager.cpp" />
     <ClCompile Include="cVAOManager\cVAOManager.cpp" />
     <ClCompile Include="funWithVectors.cpp" />
     <ClCompile Include="glad.c" />
+    <ClCompile Include="globalThings.cpp" />
+    <ClCompile Include="KeyboardCallbackFunctions.cpp" />
     <ClCompile Include="theMainFunction.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="cLight.h" />
+    <ClInclude Include="cLightHelper.h" />
+    <ClInclude Include="cLightManager.h" />
     <ClInclude Include="cMeshObject.h" />
     <ClInclude Include="cShaderManager.h" />
     <ClInclude Include="cVAOManager\cVAOManager.h" />

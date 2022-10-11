@@ -5,10 +5,6 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
     <Filter Include="Resource Files">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
@@ -24,6 +20,16 @@
     </Filter>
     <Filter Include="Shaders">
       <UniqueIdentifier>{6514997c-424c-401d-b334-d4683b0fea2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lights">
+      <UniqueIdentifier>{27956ebd-2c26-4f77-a43b-083d5af95382}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Global Stuff">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Callback Functions">
+      <UniqueIdentifier>{d391427b-e6c1-4a71-884b-8c5bcd1bd57c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -48,13 +54,28 @@
     <ClCompile Include="funWithVectors.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="cLight.cpp">
+      <Filter>Lights</Filter>
+    </ClCompile>
+    <ClCompile Include="cLightManager.cpp">
+      <Filter>Lights</Filter>
+    </ClCompile>
+    <ClCompile Include="globalThings.cpp">
+      <Filter>Global Stuff</Filter>
+    </ClCompile>
+    <ClCompile Include="KeyboardCallbackFunctions.cpp">
+      <Filter>Callback Functions</Filter>
+    </ClCompile>
+    <ClCompile Include="cLightHelper.cpp">
+      <Filter>Lights</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cShaderManager.h">
       <Filter>ShaderManager</Filter>
     </ClInclude>
     <ClInclude Include="globalOpenGL.h">
-      <Filter>Header Files</Filter>
+      <Filter>Global Stuff</Filter>
     </ClInclude>
     <ClInclude Include="cVAOManager\cVAOManager.h">
       <Filter>VAOManager</Filter>
@@ -63,7 +84,16 @@
       <Filter>cMeshObject</Filter>
     </ClInclude>
     <ClInclude Include="globalThings.h">
-      <Filter>Header Files</Filter>
+      <Filter>Global Stuff</Filter>
+    </ClInclude>
+    <ClInclude Include="cLight.h">
+      <Filter>Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="cLightManager.h">
+      <Filter>Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="cLightHelper.h">
+      <Filter>Lights</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
