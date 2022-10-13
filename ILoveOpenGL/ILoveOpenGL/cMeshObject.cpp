@@ -25,4 +25,6 @@ cMeshObject::cMeshObject()
 	this->bUse_RGBA_colour = false;
 
 	this->bDoNotLight = false;
+
+	this->bIsVisible = true;
 }

@@ -20,6 +20,24 @@ enum eEditMode
 eEditMode theEditMode = MOVING_CAMERA;
 unsigned int selectedLightIndex = 0;
 
+bool bEnableDebugLightingObjects = true;
+
+
+//0000 0001   1	GLFW_MOD_SHIFT
+//0000 0010 	  2
+//0000 0100   4
+//
+//0000 0110
+//0000 0001 	"Mask"
+//-------- -
+//0000 0000
+//
+//// I ONLY want the shift key and nothing else
+//if (mods == GLFW_MOD_SHIFT)
+//
+//// Shift key but I don't care if anything else is down, too
+//if ((mods & GLFW_MOD_SHIFT) == GLFW_MOD_SHIFT)
+
 void key_callback(GLFWwindow* window,
                          int key, int scancode,
                          int action, int mods)
@@ -36,6 +54,27 @@ void key_callback(GLFWwindow* window,
     else if (key == GLFW_KEY_L && action == GLFW_PRESS)
     {
         theEditMode = MOVING_LIGHT;
+
+//        // Check for the mods to turn the spheres on or off
+//        if ( mods == GLFW_MOD_CONTROL )
+//        {
+//            bEnableDebugLightingObjects = true;
+//        }
+//        if ( mods == GLFW_MOD_ALT )
+//        {
+//            bEnableDebugLightingObjects = false;
+//        }
+    }
+
+    if (key == GLFW_KEY_9 && action == GLFW_PRESS)
+    {
+        // Check for the mods to turn the spheres on or off
+        bEnableDebugLightingObjects = false;
+    }
+    if (key == GLFW_KEY_0 && action == GLFW_PRESS)
+    {
+        // Check for the mods to turn the spheres on or off
+        bEnableDebugLightingObjects = true;
     }
 
     switch (theEditMode)
@@ -124,6 +163,8 @@ void key_callback(GLFWwindow* window,
             }
 
             // Change attenuation
+            // Linear is ==> "how bright the light is"
+            // Quadratic is ==> "how far does the light go or 'throw' into the scene?"
             if (key == GLFW_KEY_1 )
             {
                 // Linear Decrease by 1% 
@@ -136,13 +177,29 @@ void key_callback(GLFWwindow* window,
             }
             if (key == GLFW_KEY_3 )
             {
-                // Quadratic Decrease by 0.01% 
-                ::g_pTheLightManager->vecTheLights[selectedLightIndex].atten.z *= 0.999f;
+                if (mods == GLFW_MOD_SHIFT)
+                {   // ONLY shift modifier is down
+                    // Quadratic Decrease by 0.1% 
+                    ::g_pTheLightManager->vecTheLights[selectedLightIndex].atten.z *= 0.99f;
+                }
+                else
+                {
+                    // Quadratic Decrease by 0.01% 
+                    ::g_pTheLightManager->vecTheLights[selectedLightIndex].atten.z *= 0.999f;
+                }
             }
             if (key == GLFW_KEY_4 )
             {
-                // Quadratic Increase by 0.01%
-                ::g_pTheLightManager->vecTheLights[selectedLightIndex].atten.z *= 1.001f;
+                if (mods == GLFW_MOD_SHIFT)
+                {   // ONLY shift modifier is down
+                    // Quadratic Increase by 0.1% 
+                    ::g_pTheLightManager->vecTheLights[selectedLightIndex].atten.z *= 1.01f;
+                }
+                else
+                {
+                    // Quadratic Decrease by 0.01% 
+                    ::g_pTheLightManager->vecTheLights[selectedLightIndex].atten.z *= 1.001f;
+                }
             }
 
         }//case MOVING_LIGHT:

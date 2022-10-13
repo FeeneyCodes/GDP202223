@@ -377,6 +377,14 @@ bool SaveTheVAOModelTypesToFile(std::string fileTypesToLoadName,
                                 cVAOManager* pVAOManager);
 
 
+void DrawConcentricDebugLightObjects(void);
+
+// HACK: These are the light spheres we will use for debug lighting
+cMeshObject* pDebugSphere_1 = NULL;// = new cMeshObject();
+cMeshObject* pDebugSphere_2 = NULL;// = new cMeshObject();
+cMeshObject* pDebugSphere_3 = NULL;// = new cMeshObject();
+cMeshObject* pDebugSphere_4 = NULL;// = new cMeshObject();
+cMeshObject* pDebugSphere_5 = NULL;// = new cMeshObject();
 
 int main( int argc, char* argv[] )
 {
@@ -585,10 +593,24 @@ int main( int argc, char* argv[] )
 
     ::g_pTheLightManager->vecTheLights[0].position = glm::vec4(10.0f, 10.0f, 0.0f, 1.0f);
     ::g_pTheLightManager->vecTheLights[0].diffuse = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-    ::g_pTheLightManager->vecTheLights[0].atten = glm::vec4(0.1f, 0.01f, 0.000000001f, 1.0f);
+    ::g_pTheLightManager->vecTheLights[0].atten = glm::vec4(0.1f, 0.01f, 0.0000001f, 1.0f);
 
 //    ::g_pTheLightManager->vecTheLights[0].param2.x = 1.0f;
     ::g_pTheLightManager->vecTheLights[0].TurnOn();
+
+    // Make this a spot light
+//    vec4 param1;	// x = lightType, y = inner angle, z = outer angle, w = TBD
+//                    // 0 = pointlight
+//                    // 1 = spot light
+//                    // 2 = directional light
+    ::g_pTheLightManager->vecTheLights[0].param1.x = 1.0f;  // 1 means spot light
+    
+    // In the shader Feeney gave you, the direciton is relative
+    ::g_pTheLightManager->vecTheLights[0].direction = glm::vec4(0.0f, -1.0f, 0.0f, 1.0f);
+    // inner and outer angles
+    ::g_pTheLightManager->vecTheLights[0].param1.y = 10.0f;     // Degrees
+    ::g_pTheLightManager->vecTheLights[0].param1.z = 20.0f;     // Degrees
+
 
 //    glUniform4f(light_0_position_UL, 20.0f, 40.0f, -20.0f, 1.0f);
 //    glUniform4f(light_0_diffuse_UL, 1.0f, 1.0f, 1.0f, 1.0f);
@@ -670,12 +692,12 @@ int main( int argc, char* argv[] )
     pBunnyObjectToDraw1->meshName = "Bunny";
     pBunnyObjectToDraw1->friendlyName = "Bugs";         // Google "Bugs Bunny"
     pBunnyObjectToDraw1->position = glm::vec3(0.0f, -2.0f, 0.0f);
-    pBunnyObjectToDraw1->scale = 4.0f;
+//    pBunnyObjectToDraw1->scale = 1.0f;
 
     cMeshObject* pBunnyObjectToDraw2 = new cMeshObject();
     pBunnyObjectToDraw2->meshName = "Bunny";
     pBunnyObjectToDraw2->position = glm::vec3(2.0f, -2.0f, 0.0f);
-    pBunnyObjectToDraw2->scale = 10.0f;
+//   pBunnyObjectToDraw2->scale = 1.0f;
 
     cMeshObject* pSpaceShip = new cMeshObject();
     pSpaceShip->meshName = "BirdOfPrey";
@@ -683,7 +705,7 @@ int main( int argc, char* argv[] )
     cMeshObject* pSubmarine = new cMeshObject();
     pSubmarine->meshName = "Submarine";
     pSubmarine->position = glm::vec3(10.0f, 0.0f, 0.0f);
-    pSubmarine->scale = 0.1f;
+//    pSubmarine->scale = 1.0f;
     pSubmarine->rotation.y = glm::radians(-15.0f);
 
     cMeshObject* pYellowSubmarine = new cMeshObject();
@@ -693,6 +715,12 @@ int main( int argc, char* argv[] )
     pYellowSubmarine->RGBA_colour = glm::vec4(1.0f, 0.0f, 1.0f, 1.0f);
 //    pYellowSubmarine->isWireframe = true;
 
+    cMeshObject* pTerrain = new cMeshObject();
+    pTerrain->meshName = "Terrain";
+    pTerrain->friendlyName = "Terrain";
+    pTerrain->bUse_RGBA_colour = false;
+    pTerrain->position = glm::vec3(0.0f, -25.0f, -50.0f);
+//    pYellowSubmarine->isWireframe = true;
 
 
 
@@ -720,9 +748,10 @@ int main( int argc, char* argv[] )
     vec_pMeshObjects.push_back(pSpaceShip);    // "BirdOfPrey"
     vec_pMeshObjects.push_back(pSubmarine);    // "BirdOfPrey"
     vec_pMeshObjects.push_back(pYellowSubmarine);    // "BirdOfPrey"
+    vec_pMeshObjects.push_back(pTerrain);    // "BirdOfPrey"
 
 
-    cMeshObject* pDebugSphere_1 = new cMeshObject();
+    pDebugSphere_1 = new cMeshObject();
     pDebugSphere_1->meshName = "ISO_Sphere_1";
     pDebugSphere_1->friendlyName = "Debug Sphere 1";
     pDebugSphere_1->bUse_RGBA_colour = true;
@@ -734,15 +763,45 @@ int main( int argc, char* argv[] )
 
     vec_pMeshObjects.push_back(pDebugSphere_1);
 
-    cMeshObject* pDebugSphere_2 = new cMeshObject();
+    pDebugSphere_2 = new cMeshObject();
     pDebugSphere_2->meshName = "ISO_Sphere_1";
-    pDebugSphere_2->friendlyName = "Debug Sphere 1";
+    pDebugSphere_2->friendlyName = "Debug Sphere 2";
     pDebugSphere_2->bUse_RGBA_colour = true;
-    pDebugSphere_2->RGBA_colour = glm::vec4(1.0f, 1.0f, 0.0f, 1.0f);
+    pDebugSphere_2->RGBA_colour = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
     pDebugSphere_2->isWireframe = true;
     pDebugSphere_2->scale = 1.0f;
     pDebugSphere_2->bDoNotLight = true;
     vec_pMeshObjects.push_back(pDebugSphere_2);
+
+    pDebugSphere_3 = new cMeshObject();
+    pDebugSphere_3->meshName = "ISO_Sphere_1";
+    pDebugSphere_3->friendlyName = "Debug Sphere 3";
+    pDebugSphere_3->bUse_RGBA_colour = true;
+    pDebugSphere_3->RGBA_colour = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
+    pDebugSphere_3->isWireframe = true;
+    pDebugSphere_3->scale = 1.0f;
+    pDebugSphere_3->bDoNotLight = true;
+    vec_pMeshObjects.push_back(pDebugSphere_3);
+
+    pDebugSphere_4 = new cMeshObject();
+    pDebugSphere_4->meshName = "ISO_Sphere_1";
+    pDebugSphere_4->friendlyName = "Debug Sphere 4";
+    pDebugSphere_4->bUse_RGBA_colour = true;
+    pDebugSphere_4->RGBA_colour = glm::vec4(0.0f, 1.0f, 1.0f, 1.0f);
+    pDebugSphere_4->isWireframe = true;
+    pDebugSphere_4->scale = 1.0f;
+    pDebugSphere_4->bDoNotLight = true;
+    vec_pMeshObjects.push_back(pDebugSphere_4);
+
+    pDebugSphere_5 = new cMeshObject();
+    pDebugSphere_5->meshName = "ISO_Sphere_1";
+    pDebugSphere_5->friendlyName = "Debug Sphere 5";
+    pDebugSphere_5->bUse_RGBA_colour = true;
+    pDebugSphere_5->RGBA_colour = glm::vec4(0.0f, 1.0f, 1.0f, 1.0f);
+    pDebugSphere_5->isWireframe = true;
+    pDebugSphere_5->scale = 1.0f;
+    pDebugSphere_5->bDoNotLight = true;
+    vec_pMeshObjects.push_back(pDebugSphere_5);
 
 
 /*  We could also make this on the stack in this way:
@@ -814,21 +873,6 @@ int main( int argc, char* argv[] )
         // HACK
 //        ::g_pTheLightManager->vecTheLights[0].position.x += 0.05f;
 
-        // Move the debug sphere to where the light #0 is
-        pDebugSphere_1->position = glm::vec3(::g_pTheLightManager->vecTheLights[0].position);
-
-
-
-        float distance10percent =  pLightHelper->calcApproxDistFromAtten(
-            0.1f,  // 10%
-            0.001f,
-            100000.0f,
-            ::g_pTheLightManager->vecTheLights[0].atten.x,
-            ::g_pTheLightManager->vecTheLights[0].atten.y,
-            ::g_pTheLightManager->vecTheLights[0].atten.z);
-
-        pDebugSphere_2->scale = distance10percent;
-
         ::g_pTheLightManager->CopyLightInformationToShader(shaderID);
 
 //        glUniform4f(light_0_position_UL,
@@ -838,6 +882,18 @@ int main( int argc, char* argv[] )
 //                    1.0f);
 
 
+        // Point the spotlight at the submarine
+        glm::vec3 LightToSubRay =
+            pYellowSubmarine->position - glm::vec3(::g_pTheLightManager->vecTheLights[0].position);
+
+        // Normalizing is also just divide by the length of the ray
+//        LightToSubRay /= glm::length(LightToSubRay);
+        LightToSubRay = glm::normalize(LightToSubRay);
+
+        ::g_pTheLightManager->vecTheLights[0].direction = glm::vec4(LightToSubRay, 1.0f);
+
+
+        DrawConcentricDebugLightObjects();
 
         float ratio;
         int width, height;
@@ -899,6 +955,12 @@ int main( int argc, char* argv[] )
               itCurrentMesh++ )
         {
             cMeshObject* pCurrentMeshObject = *itCurrentMesh;        // * is the iterator access thing
+
+            if ( ! pCurrentMeshObject->bIsVisible )
+            {
+                // Skip the rest of the loop
+                continue;
+            }
 
     // 
             // Don't draw any "back facing" triangles
@@ -1089,4 +1151,92 @@ int main( int argc, char* argv[] )
 
     glfwTerminate();
     exit(EXIT_SUCCESS);
+}
+
+
+void DrawConcentricDebugLightObjects(void)
+{
+    extern bool bEnableDebugLightingObjects;
+
+    if ( ! bEnableDebugLightingObjects )
+    {
+        pDebugSphere_1->bIsVisible = false;
+        pDebugSphere_2->bIsVisible = false;
+        pDebugSphere_3->bIsVisible = false;
+        pDebugSphere_4->bIsVisible = false;
+        pDebugSphere_5->bIsVisible = false;
+       return;
+    }
+
+    pDebugSphere_1->bIsVisible = true;
+    pDebugSphere_2->bIsVisible = true;
+    pDebugSphere_3->bIsVisible = true;
+    pDebugSphere_4->bIsVisible = true;
+    pDebugSphere_5->bIsVisible = true;
+
+    cLightHelper theLightHelper;
+
+            // Move the debug sphere to where the light #0 is
+    pDebugSphere_1->position = glm::vec3(::g_pTheLightManager->vecTheLights[0].position);
+    pDebugSphere_2->position = glm::vec3(::g_pTheLightManager->vecTheLights[0].position);
+    pDebugSphere_3->position = glm::vec3(::g_pTheLightManager->vecTheLights[0].position);
+    pDebugSphere_4->position = glm::vec3(::g_pTheLightManager->vecTheLights[0].position);
+    pDebugSphere_5->position = glm::vec3(::g_pTheLightManager->vecTheLights[0].position);
+
+    {
+        // Draw a bunch of concentric spheres at various "brightnesses" 
+        float distance75percent = theLightHelper.calcApproxDistFromAtten(
+            0.75f,  // 75%
+            0.001f,
+            100000.0f,
+            ::g_pTheLightManager->vecTheLights[0].atten.x,
+            ::g_pTheLightManager->vecTheLights[0].atten.y,
+            ::g_pTheLightManager->vecTheLights[0].atten.z);
+
+        pDebugSphere_2->scale = distance75percent;
+        pDebugSphere_2->position = glm::vec3(::g_pTheLightManager->vecTheLights[0].position);
+    }
+
+    {
+        // Draw a bunch of concentric spheres at various "brightnesses" 
+        float distance50percent = theLightHelper.calcApproxDistFromAtten(
+            0.50f,  // 75%
+            0.001f,
+            100000.0f,
+            ::g_pTheLightManager->vecTheLights[0].atten.x,
+            ::g_pTheLightManager->vecTheLights[0].atten.y,
+            ::g_pTheLightManager->vecTheLights[0].atten.z);
+
+        pDebugSphere_3->scale = distance50percent;
+        pDebugSphere_3->position = glm::vec3(::g_pTheLightManager->vecTheLights[0].position);
+    }
+
+    {
+        // Draw a bunch of concentric spheres at various "brightnesses" 
+        float distance25percent = theLightHelper.calcApproxDistFromAtten(
+            0.25f,  // 75%
+            0.001f,
+            100000.0f,
+            ::g_pTheLightManager->vecTheLights[0].atten.x,
+            ::g_pTheLightManager->vecTheLights[0].atten.y,
+            ::g_pTheLightManager->vecTheLights[0].atten.z);
+
+        pDebugSphere_4->scale = distance25percent;
+        pDebugSphere_4->position = glm::vec3(::g_pTheLightManager->vecTheLights[0].position);
+    }
+
+    {
+        // Draw a bunch of concentric spheres at various "brightnesses" 
+        float distance5percent = theLightHelper.calcApproxDistFromAtten(
+            0.05f,  // 75%
+            0.001f,
+            100000.0f,
+            ::g_pTheLightManager->vecTheLights[0].atten.x,
+            ::g_pTheLightManager->vecTheLights[0].atten.y,
+            ::g_pTheLightManager->vecTheLights[0].atten.z);
+
+        pDebugSphere_5->scale = distance5percent;
+        pDebugSphere_5->position = glm::vec3(::g_pTheLightManager->vecTheLights[0].position);
+    }
+    return;
 }

@@ -29,6 +29,7 @@ public:
 
 	bool bDoNotLight;
 
+	bool bIsVisible;
 
 	// Later (after mid-term)
 //	std::string textures[10];

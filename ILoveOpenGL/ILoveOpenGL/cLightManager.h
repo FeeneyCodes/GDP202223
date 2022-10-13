@@ -9,7 +9,7 @@ class cLightManager
 public:
 	cLightManager();
 
-	static const unsigned int NUMBER_OF_LIGHTS_IM_GONNA_USE = 2;
+	static const unsigned int NUMBER_OF_LIGHTS_IM_GONNA_USE = 3;
 //	static const unsigned int NUMBER_OF_LIGHTS_IM_GONNA_USE = 10;
 	std::vector<cLight> vecTheLights;
 
