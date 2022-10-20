@@ -35,7 +35,7 @@ void main()
 	
 	// Send the normals to the fragment shader
 	// Rotate the normal if the model is rotated
-	fNormal.xyz = (mModelInverseTranspose * vec4(vNormal, 1.0f)).xyz;
+	fNormal.xyz = normalize(mModelInverseTranspose * vec4(vNormal, 1.0f)).xyz;
 	
 	colour = vCol;
 }

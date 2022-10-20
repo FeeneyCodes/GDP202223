@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{da94c46c-f9ee-49cf-847f-d12127908834}</ProjectGuid>
-    <RootNamespace>ILoveOpenGL</RootNamespace>
+    <ProjectGuid>{faa7b499-593c-4ef6-9bba-ead75f90d8df}</ProjectGuid>
+    <RootNamespace>ClassesInCPP</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -70,14 +70,6 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(ProjectDir)include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProjectDir)lib/Release_x64;$(LibraryPath)</LibraryPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(ProjectDir)include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProjectDir)lib/Debug_x64;$(LibraryPath)</LibraryPath>
-  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -116,7 +108,6 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -133,41 +124,19 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="cLight.cpp" />
-    <ClCompile Include="cLightHelper.cpp" />
-    <ClCompile Include="cLightManager.cpp" />
-    <ClCompile Include="cMeshObject.cpp" />
-    <ClCompile Include="cShader.cpp" />
-    <ClCompile Include="cShaderManager.cpp" />
-    <ClCompile Include="cVAOManager\cVAOManager.cpp" />
-    <ClCompile Include="FunWithMaps.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="funWithVectors.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="glad.c" />
-    <ClCompile Include="globalThings.cpp" />
-    <ClCompile Include="KeyboardCallbackFunctions.cpp" />
-    <ClCompile Include="theMainFunction.cpp" />
+    <ClInclude Include="cAnimal.h" />
+    <ClInclude Include="cRabbit.h" />
+    <ClInclude Include="cWolf.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="cLight.h" />
-    <ClInclude Include="cLightHelper.h" />
-    <ClInclude Include="cLightManager.h" />
-    <ClInclude Include="cMeshObject.h" />
-    <ClInclude Include="cShaderManager.h" />
-    <ClInclude Include="cVAOManager\cVAOManager.h" />
-    <ClInclude Include="globalOpenGL.h" />
-    <ClInclude Include="globalThings.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="assets\shaders\fragmentShader01.glsl" />
-    <None Include="assets\shaders\vertexShader01.glsl" />
+    <ClCompile Include="cAnimal.cpp" />
+    <ClCompile Include="cRabbit.cpp" />
+    <ClCompile Include="cWolf.cpp" />
+    <ClCompile Include="OldCode.cpp" />
+    <ClCompile Include="TheMain.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
