@@ -712,7 +712,7 @@ int main( int argc, char* argv[] )
     pYellowSubmarine->meshName = "Submarine";
     pYellowSubmarine->friendlyName = "Yellow Submarine";    // Google "Yellow Submarine" to see what drugs in the 60s were like.
     pYellowSubmarine->bUse_RGBA_colour = true;
-    pYellowSubmarine->RGBA_colour = glm::vec4(1.0f, 0.0f, 1.0f, 1.0f);
+    pYellowSubmarine->RGBA_colour = glm::vec4(1.0f, 1.0f, 0.0f, 1.0f);
 //    pYellowSubmarine->isWireframe = true;
 
     cMeshObject* pTerrain = new cMeshObject();
@@ -890,7 +890,7 @@ int main( int argc, char* argv[] )
 //        LightToSubRay /= glm::length(LightToSubRay);
         LightToSubRay = glm::normalize(LightToSubRay);
 
-        ::g_pTheLightManager->vecTheLights[0].direction = glm::vec4(LightToSubRay, 1.0f);
+//        ::g_pTheLightManager->vecTheLights[0].direction = glm::vec4(LightToSubRay, 1.0f);
 
 
         DrawConcentricDebugLightObjects();
