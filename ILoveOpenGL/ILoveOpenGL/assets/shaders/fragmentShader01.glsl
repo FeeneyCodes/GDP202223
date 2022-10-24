@@ -1,9 +1,17 @@
 //Fragment shader
 #version 420
 
-in vec3 colour;			// varying
-in vec3 fNormal;		// From the vertex shader
-in vec3 fVertWorldLocation;	
+// Original things from the vertex shader
+//in vec3 colour;			// varying
+//in vec3 fNormal;		// From the vertex shader
+//in vec3 fVertWorldLocation;	
+
+in vec4 fColour;		// colour;			
+in vec4 fNormal;
+in vec4 fVertWorldLocation;	// using only matModel
+in vec4 fUVx2;
+in vec4 fTangent;
+in vec4 fBinormal;
 
 
 // This replaces gl_FragColor
@@ -39,15 +47,15 @@ const int POINT_LIGHT_TYPE = 0;
 const int SPOT_LIGHT_TYPE = 1;
 const int DIRECTIONAL_LIGHT_TYPE = 2;
 
-const int NUMBEROFLIGHTS = 3;
-uniform sLight theLights[NUMBEROFLIGHTS];  	// 80 uniforms
+const int NUMBEROFLIGHTS = 20;
+uniform sLight theLights[NUMBEROFLIGHTS];  	// 
 
 vec4 calculateLightContrib( vec3 vertexMaterialColour, vec3 vertexNormal, 
                             vec3 vertexWorldPos, vec4 vertexSpecular );
 
 void main()
 {
-	vec3 materialColour = colour;
+	vec3 materialColour = fColour.rgb;
 //	finalColour.r = 1.0f;
 
 	if ( bUseRGBA_Colour )

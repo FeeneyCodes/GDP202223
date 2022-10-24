@@ -143,6 +143,7 @@
     <ClCompile Include="cMeshObject.cpp" />
     <ClCompile Include="cShader.cpp" />
     <ClCompile Include="cShaderManager.cpp" />
+    <ClCompile Include="cVAOManager\c3DModelFileLoader.cpp" />
     <ClCompile Include="cVAOManager\cVAOManager.cpp" />
     <ClCompile Include="FunWithMaps.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
@@ -161,7 +162,9 @@
     <ClInclude Include="cLightManager.h" />
     <ClInclude Include="cMeshObject.h" />
     <ClInclude Include="cShaderManager.h" />
+    <ClInclude Include="cVAOManager\c3DModelFileLoader.h" />
     <ClInclude Include="cVAOManager\cVAOManager.h" />
+    <ClInclude Include="cVAOManager\sModelDrawInfo.h" />
     <ClInclude Include="globalOpenGL.h" />
     <ClInclude Include="globalThings.h" />
   </ItemGroup>
