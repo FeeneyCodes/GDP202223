@@ -84,7 +84,7 @@
 //
 //sVertex_XYZ_RGB* vertices = new sVertex_XYZ_RGB[NUMBER_OF_VERTICES];
 
-glm::vec3 g_cameraEye = glm::vec3(0.0, 0.0, -25.0f);
+glm::vec3 g_cameraEye = glm::vec3(0.0, 100.0, -300.0f);
 glm::vec3 g_cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
 
 
@@ -621,6 +621,25 @@ int main( int argc, char* argv[] )
     ::g_pTheLightManager->vecTheLights[0].param1.z = 20.0f;     // Degrees
 
 
+    // Make light #2 a directional light
+    // BE CAREFUL about the direction and colour, since "colour" is really brightness.
+    // (i.e. there NO attenuation)
+    ::g_pTheLightManager->vecTheLights[1].param1.x = 2.0f;  // 2 means directional
+    // No position or attenuation
+    ::g_pTheLightManager->vecTheLights[1].diffuse = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+    ::g_pTheLightManager->vecTheLights[1].direction = glm::vec4(0.0f, -1.0f, 0.0f, 1.0f);
+    ::g_pTheLightManager->vecTheLights[1].TurnOn();
+
+    // BE CAREFUL about the direction and colour, since "colour" is really brightness.
+    // (i.e. there NO attenuation)
+    ::g_pTheLightManager->vecTheLights[1].param1.x = 0.0f;  // 2 means directional
+    // No position or attenuation
+    ::g_pTheLightManager->vecTheLights[1].diffuse = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+    ::g_pTheLightManager->vecTheLights[1].position = glm::vec4(0.0f, 500.0f, 500.0f, 1.0f);
+    ::g_pTheLightManager->vecTheLights[1].atten = glm::vec4(0.1f, 0.001f, 0.0000001f, 1.0f);
+    ::g_pTheLightManager->vecTheLights[1].TurnOn();
+
+
 //    glUniform4f(light_0_position_UL, 20.0f, 40.0f, -20.0f, 1.0f);
 //    glUniform4f(light_0_diffuse_UL, 1.0f, 1.0f, 1.0f, 1.0f);
 //    glUniform4f(light_0_specular_UL, 1.0f, 1.0f, 1.0f, 1.0f);
@@ -725,12 +744,11 @@ int main( int argc, char* argv[] )
 //    pYellowSubmarine->isWireframe = true;
 
     cMeshObject* pTerrain = new cMeshObject();
-    pTerrain->meshName = "Terrain";
+    pTerrain->meshName = "Terrain_midterm";     //  "Terrain";
     pTerrain->friendlyName = "Terrain";
-    pTerrain->bUse_RGBA_colour = false;
+    pTerrain->bUse_RGBA_colour = true;      // Use file colours
     pTerrain->position = glm::vec3(0.0f, -25.0f, -50.0f);
-//    pYellowSubmarine->isWireframe = true;
-
+    pTerrain->isWireframe = false;
 
 
 //    // Add all these to an array:

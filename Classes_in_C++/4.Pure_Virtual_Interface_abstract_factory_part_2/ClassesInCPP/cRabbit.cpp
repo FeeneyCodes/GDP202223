@@ -21,3 +21,9 @@ void cRabbit::GetFood(void)
 {
 	std::cout << "cRabbit::GetFood(void)" << std::endl;
 }
+
+
+void cRabbit::Move(void)
+{
+	std::cout << "cRabbit::Move()" << std::endl;
+}

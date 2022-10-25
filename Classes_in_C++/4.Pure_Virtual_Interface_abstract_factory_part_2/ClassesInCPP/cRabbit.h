@@ -12,7 +12,7 @@ public:
 	// from iAnimal interface
 	virtual void MakeSound(void);
 	virtual void GetFood(void);
-
+	virtual void Move(void);
 
 	sAnimalData theData;
 

@@ -21,3 +21,8 @@ void cWolf::GetFood(void)
 {
 	std::cout << "cWolf::GetFood(void)" << std::endl;
 }
+
+void cWolf::Move(void)
+{
+	std::cout << "cWolf::Move()" << std::endl;
+}

@@ -22,9 +22,9 @@ public:
 	virtual void GetFood(void) = 0 ;
 	// and other things...
 	// virtual void Move(float delta_x, float delta_y) = 0;
-	virtual void Walk(void);
-	virtual void Swim(void);
-	virtual void Fly(void);
+//	virtual void Walk(void);
+//	virtual void Swim(void);
+//	virtual void Fly(void);
 
 	virtual void Move(void) = 0;
 	
