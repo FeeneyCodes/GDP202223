@@ -3,22 +3,31 @@
 #include <vector>
 
 #include "iRobot.h"
+#include "iDamage.h"
 //#include "cRobotShepherd.h"
 #include "iRobotInformant.h"
 
 
-class cRobot : public iRobot
+class cRobot : 
+	public iRobot,		// This is "multiple inheritance"
+	public iDamage
 {
 public:
+
+//	friend cRobotShepherd;
 	cRobot();
 
 	std::string name;
 	float health;
 	sVec3 location;
 
+	// from the iDamage interface
+	virtual void TakeDamage(float amount);
+
+
+
 	// The Shepherd calls this
 	void SetRobotShepherd(iRobotInformant* pTheShepherd);
-
 
 	void ShootRobot(void);
 

@@ -1,4 +1,5 @@
 #include "cRobot.h"
+#include <iostream>
 
 cRobot::cRobot()
 {
@@ -26,7 +27,7 @@ void cRobot::ShootRobot(void)
 }
 
 	// The Shepherd calls this
-void cRobot::SetRobotShepherd(cRobotShepherd* pTheShepherd)
+void cRobot::SetRobotShepherd(iRobotInformant* pTheShepherd)
 {
 	this->m_pTheShepherd = pTheShepherd;
 	return;
@@ -39,8 +40,20 @@ void cRobot::Update(double deltaTime)
 	// Assume we are about to find a robot
 	// iRobot* findClosestRobot(iRobot* pMeWhosAsking);
 
-	iRobot* pTheClosestRobot = this->m_pTheShepherd->findClosestRobot(this);
+//	iDamage* pTheClosestRobot = this->m_pTheShepherd->findClosestRobot(this);
+//	// Hit the robot
+//	pTheClosestRobot->TakeDamage(10.0f);
+
+	this->m_pTheShepherd->ShootTheClosestRobot(this, 10.0f);
 
 
+
+	return;
+}
+
+void cRobot::TakeDamage(float amount)
+{
+	std::cout << "Robot " << this->getID() << " took "
+		<< amount << " damage!!" << std::endl;
 	return;
 }

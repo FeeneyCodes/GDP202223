@@ -127,12 +127,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="cKaiju.h" />
     <ClInclude Include="cRobot.h" />
     <ClInclude Include="cRobotShepherd.h" />
+    <ClInclude Include="iDamage.h" />
     <ClInclude Include="iRobot.h" />
     <ClInclude Include="iRobotInformant.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="cKaiju.cpp" />
     <ClCompile Include="cRobot.cpp" />
     <ClCompile Include="cRobotShepherd.cpp" />
     <ClCompile Include="TheMain.cpp" />

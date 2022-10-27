@@ -1,9 +1,14 @@
 #include "cRobotShepherd.h"
 
 #include "cRobot.h"	// This is the ACTUAL robot, not interface
+#include "cKaiju.h"
+
+// HACK
+cKaiju* g_Gozzila;
 
 cRobotShepherd::cRobotShepherd()
 {
+	::g_Gozzila = new cKaiju();
 }
 
 iRobot* cRobotShepherd::makeRobot(void)
@@ -20,11 +25,21 @@ iRobot* cRobotShepherd::makeRobot(void)
 	return pNewRobot;
 }
 
-iRobot* cRobotShepherd::findClosestRobot(iRobot* pMeWhosAsking)
+iDamage* cRobotShepherd::findClosestRobot(iRobot* pMeWhosAsking)
 {
-	iRobot* pClosestRobot = NULL;
+	iDamage* pClosestRobot = NULL;
 
-	// Code to find closest robot
+	if ( rand() % 3 )
+	{
+		// 1 in 3 chance of picking Gozilla
+		pClosestRobot = ::g_Gozzila;
+	}
+	else
+	{
+		// Code to find closest robot
+		// I'm lazy so I'm going to just pick a random robot
+		pClosestRobot = (cRobot*)this->m_vecTheRobots[rand() % 8];
+	}
 
 
 	return pClosestRobot;
@@ -40,3 +55,26 @@ void cRobotShepherd::Update(double deltaTime)
 
 	return;
 }
+
+// Return true if I actually hit something... maybe
+bool cRobotShepherd::ShootTheClosestRobot(iRobot* pMeWhosAsking, float amount)
+{
+	// 1 in 3 chance of picking Gozilla
+
+	if (rand() % 3)
+	{
+		::g_Gozzila->TakeDamage(amount);
+	}
+	else
+	{
+		// Code to find closest robot
+		// I'm lazy so I'm going to just pick a random robot
+		cRobot* pClosestRobot = (cRobot*)this->m_vecTheRobots[rand() % 8];
+
+		pClosestRobot->TakeDamage(amount);
+	}
+
+
+	return true;
+}
+

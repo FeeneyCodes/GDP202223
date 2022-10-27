@@ -4,6 +4,19 @@
 #include "iRobotInformant.h"
 #include <vector>
 
+// Command pattern 
+struct sMessage
+{
+	std::string theCommand;
+	std::string someData;
+	float fData[4];
+};
+
+//sMessage shotThisGuy;
+//shotThisGuy.theCommand = "shoot closest robot"
+//shotThisGuy.theCommand = "SCR"
+//shotThisGuy.fData[0] = 10.0f;
+
 // This is:
 // * the factory object to create robots
 // * keeps track of robots for other robots
@@ -17,12 +30,21 @@ public:
 	iRobot* makeRobot(void);
 	//iRobot* makeRobot(std::string robotType);
 
+
+
 	// Commands that the robots can call to ask about things, 
 	//  like where my robots at? 
 	// Returns NULL (or 0 or nullptr) if there isn't any
-	iRobot* findClosestRobot(iRobot* pMeWhosAsking);
+	//iRobot* findClosestRobot(iRobot* pMeWhosAsking);
+	iDamage* findClosestRobot(iRobot* pMeWhosAsking);
 
-	iRobot* askSomething(std::string thingIWantToAsk);
+	// Return true if I actually hit something... maybe
+	bool ShootTheClosestRobot(iRobot* pMeWhosAsking, float amount);
+
+	// Type of mediator method
+	sMessage DoSomething(iRobot* pWhosCalling, sMessage theMessage);
+
+
 
 	// or you could do this, where returning false means there isn't one
 //	bool findClosestRobot(iRobot* pMeWhosAsking, iRobot* &pClosestRobot);
