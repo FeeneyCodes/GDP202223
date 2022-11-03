@@ -29,6 +29,8 @@
 #include "cLightHelper.h"
 #include "cVAOManager/c3DModelFileLoader.h"
 
+#include "cBasicTextureManager/cBasicTextureManager.h"
+
 
 // This is all now part of the VAO manager
 // 
@@ -87,6 +89,7 @@
 glm::vec3 g_cameraEye = glm::vec3(0.0, 100.0, -300.0f);
 glm::vec3 g_cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
 
+cBasicTextureManager* g_pTextureManager = NULL;
 
 
 
@@ -612,7 +615,7 @@ int main( int argc, char* argv[] )
 //                    // 0 = pointlight
 //                    // 1 = spot light
 //                    // 2 = directional light
-    ::g_pTheLightManager->vecTheLights[0].param1.x = 1.0f;  // 1 means spot light
+    ::g_pTheLightManager->vecTheLights[0].param1.x = 0.0f;  // 1 means spot light
     
     // In the shader Feeney gave you, the direciton is relative
     ::g_pTheLightManager->vecTheLights[0].direction = glm::vec4(0.0f, -1.0f, 0.0f, 1.0f);
@@ -732,6 +735,7 @@ int main( int argc, char* argv[] )
 
     cMeshObject* pSubmarine = new cMeshObject();
     pSubmarine->meshName = "Submarine";
+    pSubmarine->RGBA_colour.w = 0.5f;
     pSubmarine->position = glm::vec3(10.0f, 0.0f, 0.0f);
 //    pSubmarine->scale = 1.0f;
     pSubmarine->rotation.y = glm::radians(-15.0f);
@@ -746,9 +750,21 @@ int main( int argc, char* argv[] )
     cMeshObject* pTerrain = new cMeshObject();
     pTerrain->meshName = "Terrain_midterm";     //  "Terrain";
     pTerrain->friendlyName = "Terrain";
-    pTerrain->bUse_RGBA_colour = true;      // Use file colours
+    pTerrain->bUse_RGBA_colour = false;      // Use file colours    pTerrain->RGBA_colour = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
+    pTerrain->specular_colour_and_power
+        = glm::vec4(1.0f, 1.0f, 1.0f, 1000.0f);
+    // Make it sort of transparent
+    pTerrain->RGBA_colour.w = 0.50f;
+//    pTerrain->position = glm::vec3(0.0f, 50.0f, -50.0f);
     pTerrain->position = glm::vec3(0.0f, -25.0f, -50.0f);
     pTerrain->isWireframe = false;
+
+    pTerrain->textures[0] = "aerial-drone-view-rice-field.bmp";
+    pTerrain->textures[1] = "taylor-swift-tour-dates-fan-wedding-plans.bmp";
+
+    pTerrain->textureRatios[0] = 1.0f;      // Rice field
+    pTerrain->textureRatios[1] = 0.0f;      // Taylor Swift
+
 
 
 //    // Add all these to an array:
@@ -776,6 +792,9 @@ int main( int argc, char* argv[] )
     vec_pMeshObjects.push_back(pSubmarine);    // "BirdOfPrey"
     vec_pMeshObjects.push_back(pYellowSubmarine);    // "BirdOfPrey"
     vec_pMeshObjects.push_back(pTerrain);    // "BirdOfPrey"
+
+
+    // 
 
 
     pDebugSphere_1 = new cMeshObject();
@@ -894,6 +913,41 @@ int main( int argc, char* argv[] )
     GLint mModelInverseTransform_location = glGetUniformLocation(shaderID, "mModelInverseTranspose");      
 
 
+    // For transparent objects, we:
+    // 1. Split them between transparent and NOT transparent items
+    // 2. Draw all the NON transparent objects (in any order)
+    //      d (depth) buffer will take care of that
+    //    (if alpha < 1.0f) --> it's transparent
+    // 3. Sort the transparent items from "far" to "close" to the camera
+    //    and draw them from far to close. 
+
+    // The "sort" can be very trivial, like a single pass of the bubble
+    //  sort is more than fine. 
+    // Distance = glm::distance( cameraEye, pTheObject->position);
+
+ //   vector<cMeshObject> transparent;
+ //   vector<cMeshObject> nonTransparent;
+
+
+
+    // FINALLY load the textures.
+    // (because they take forever to load)
+    ::g_pTextureManager = new cBasicTextureManager();
+
+    ::g_pTextureManager->SetBasePath("assets/textures");
+    if ( ! ::g_pTextureManager->Create2DTextureFromBMPFile("aerial-drone-view-rice-field.bmp") )
+    {
+        std::cout << "Didn't load texture" << std::endl;
+    }
+    else
+    {
+        std::cout << "texture loaded" << std::endl;
+    }
+    ::g_pTextureManager->Create2DTextureFromBMPFile("taylor-swift-tour-dates-fan-wedding-plans.bmp");
+
+
+    std::cout.flush();
+
 
     while ( ! glfwWindowShouldClose(window) )
     {
@@ -918,6 +972,12 @@ int main( int argc, char* argv[] )
         LightToSubRay = glm::normalize(LightToSubRay);
 
 //        ::g_pTheLightManager->vecTheLights[0].direction = glm::vec4(LightToSubRay, 1.0f);
+
+
+        // Adjust the texture ratios
+        pTerrain->textureRatios[0] -= 0.001;      // Rice field
+        pTerrain->textureRatios[1] += 0.001;      // Taylor Swift
+
 
 
         DrawConcentricDebugLightObjects();
@@ -1078,11 +1138,19 @@ int main( int argc, char* argv[] )
 
             GLint RGBA_Colour_ULocID = glGetUniformLocation(shaderID, "RGBA_Colour");
 
+            // Turn on alpha transparency for everything
+            // Maybe: if ( alpha < 1.0 ) ...
+            glEnable(GL_BLEND); 
+            // Basic alpha transparency:
+            // 0.5 --> 0.5 what was already on the colour buffer 
+            //       + 0.5 of this object being drawn
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
             glUniform4f(RGBA_Colour_ULocID,
                         pCurrentMeshObject->RGBA_colour.r,
                         pCurrentMeshObject->RGBA_colour.g,
                         pCurrentMeshObject->RGBA_colour.b,
-                        pCurrentMeshObject->RGBA_colour.w);
+                        pCurrentMeshObject->RGBA_colour.w);     // Transparency
 
 
             GLint bUseRGBA_Colour_ULocID = glGetUniformLocation(shaderID, "bUseRGBA_Colour");
@@ -1095,6 +1163,15 @@ int main( int argc, char* argv[] )
             {
                 glUniform1f(bUseRGBA_Colour_ULocID, (GLfloat)GL_FALSE);
             }
+
+            // Copy specular object colour and power. 
+            GLint specularColour_ULocID = glGetUniformLocation(shaderID, "specularColour");
+
+            glUniform4f(specularColour_ULocID,
+                        pCurrentMeshObject->specular_colour_and_power.r,
+                        pCurrentMeshObject->specular_colour_and_power.g,
+                        pCurrentMeshObject->specular_colour_and_power.b,
+                        pCurrentMeshObject->specular_colour_and_power.w);
 
             //uniform bool bDoNotLight;	
             GLint bDoNotLight_Colour_ULocID = glGetUniformLocation(shaderID, "bDoNotLight");
@@ -1109,6 +1186,50 @@ int main( int argc, char* argv[] )
             }
 
 
+            // Set up the textures on this model
+            std::string texture0Name = pCurrentMeshObject->textures[0];  // Rice field
+            std::string texture1Name = pCurrentMeshObject->textures[1];  // Taylor Swift
+
+
+            GLuint texture00Number = ::g_pTextureManager->getTextureIDFromName(texture0Name);
+
+            // Choose the texture Unit I want
+            GLuint texture00Unit = 0;			// Texture unit go from 0 to 79
+            glActiveTexture(texture00Unit + GL_TEXTURE0);	// GL_TEXTURE0 = 33984
+
+            // Pick the texture 
+            // 1. make it "active" (binding)
+            // 2. Attatches it the current ACTIVE TEXTURE UNIT
+            glBindTexture(GL_TEXTURE_2D, texture00Number);      
+
+            // glBindTextureUnit( texture00Unit, texture00Number );	// OpenGL 4.5+ only
+            // 
+            // uniform sampler2D texture0;
+           
+            GLint texture0_UL = glGetUniformLocation( shaderID, "texture0");
+            glUniform1i(texture0_UL, texture00Unit);
+
+
+            // Same for texture #1
+            GLuint texture01Number = ::g_pTextureManager->getTextureIDFromName(texture1Name);
+            GLuint texture01Unit = 1;			// Texture unit go from 0 to 79
+            glActiveTexture(texture01Unit + GL_TEXTURE0);	// GL_TEXTURE0 = 33984
+            glBindTexture(GL_TEXTURE_2D, texture01Number);
+            GLint texture1_UL = glGetUniformLocation(shaderID, "texture1");
+            glUniform1i(texture1_UL, texture01Unit);
+
+            // Do that for the other 6 textures... FUN!
+
+
+            // uniform vec4 texRatio_0_3;
+            GLint texRatio_0_3 = glGetUniformLocation( shaderID, "texRatio_0_3");
+            glUniform4f( texRatio_0_3,
+                         pCurrentMeshObject->textureRatios[0],
+                         pCurrentMeshObject->textureRatios[1],
+                         pCurrentMeshObject->textureRatios[2],
+                         pCurrentMeshObject->textureRatios[3]);
+
+
             // Choose the VAO that has the model we want to draw...
             sModelDrawInfo drawingInformation;
             if ( pVAOManager->FindDrawInfoByModelName(pCurrentMeshObject->meshName, drawingInformation) )
@@ -1119,10 +1240,6 @@ int main( int argc, char* argv[] )
                                drawingInformation.numberOfIndices, 
                                GL_UNSIGNED_INT,
                                (void*) 0 );
-
-        //        glDrawArrays(GL_TRIANGLES, 0, numVerticesToDraw);
-        //        glDrawArrays(GL_TRIANGLES, 0, thePlyInfo.numberOfvertices);
-        //        glDrawArrays(GL_TRIANGLES, 0, 3);
 
                 glBindVertexArray(0);
 

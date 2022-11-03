@@ -148,6 +148,12 @@ bool c3DModelFileLoader::LoadPLYFile_Format_XYZ_N_RGBA_UV(std::string filename,
         modelDrawInfo.pVertices[index].ny = pTheModelArray[index].ny;
         modelDrawInfo.pVertices[index].nz = pTheModelArray[index].nz;
 
+        // Copy the texture coordinates we loaded
+        modelDrawInfo.pVertices[index].u0 = pTheModelArray[index].texture_u;
+        modelDrawInfo.pVertices[index].v0 = pTheModelArray[index].texture_v;
+        // For now, I'll ignore the other two
+
+
     }
 
     modelDrawInfo.numberOfIndices = modelDrawInfo.numberOfTriangles * 3;

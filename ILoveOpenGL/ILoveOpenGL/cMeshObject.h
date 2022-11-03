@@ -23,16 +23,23 @@ public:
 	float scale;
     bool isWireframe;		// false
 
+	// This is the "diffuse" colour
     glm::vec4 RGBA_colour;		// RGA & Alpha, 0,0,0,1 (black, with transparency of 1.0)
+	
 	// When true, it will overwrite the vertex colours
 	bool bUse_RGBA_colour; 
+
+	glm::vec4 specular_colour_and_power;
+			// RGB is the specular highlight colour
+			// w is the power
 
 	bool bDoNotLight;
 
 	bool bIsVisible;
 
 	// Later (after mid-term)
-//	std::string textures[10];
+	std::string textures[8];
+	float textureRatios[8];
 
 };
 

@@ -24,7 +24,21 @@ cMeshObject::cMeshObject()
 	this->RGBA_colour = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 	this->bUse_RGBA_colour = false;
 
+	// Make this white unless it's plastic or metal
+	// Specualar (w) of 1 is "not" shiny
+	this->specular_colour_and_power = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+
 	this->bDoNotLight = false;
 
 	this->bIsVisible = true;
-}
+
+	this->textureRatios[0] = 0.0f;
+	this->textureRatios[1] = 0.0f;
+	this->textureRatios[2] = 0.0f;
+	this->textureRatios[3] = 0.0f;
+	this->textureRatios[4] = 0.0f;
+	this->textureRatios[5] = 0.0f;
+	this->textureRatios[6] = 0.0f;
+	this->textureRatios[7] = 0.0f;
+}	
+
