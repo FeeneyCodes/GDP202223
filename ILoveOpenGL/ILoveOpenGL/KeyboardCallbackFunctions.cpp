@@ -77,6 +77,25 @@ void key_callback(GLFWwindow* window,
         bEnableDebugLightingObjects = true;
     }
 
+
+    // Move the drop ships engine
+    cMeshObject* pDropShipEngine1
+        = findObjectByFriendlyName("Engine_1", vec_pMeshObjects);
+    
+    if ( pDropShipEngine1 )
+    {
+        if (key == GLFW_KEY_T)     // Rotate one way
+        {
+            pDropShipEngine1->rotation.x += glm::radians(1.0f);
+        }
+        if (key == GLFW_KEY_Y)     // Rotate the other way
+        {
+            pDropShipEngine1->rotation.x -= glm::radians(1.0f);
+        }
+    }//if ( pDropShipEngine1 )
+                                                             
+
+
     switch (theEditMode)
     {
     case MOVING_CAMERA:

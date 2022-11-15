@@ -785,6 +785,7 @@ int main( int argc, char* argv[] )
 
     cMeshObject* pEngine_1_front_port_left = new cMeshObject();
     pEngine_1_front_port_left->meshName = "Engine_1_front_port_left";
+    pEngine_1_front_port_left->friendlyName = "Engine_1";
     pEngine_1_front_port_left->bUse_RGBA_colour = true;
     pEngine_1_front_port_left->RGBA_colour = glm::vec4(0.7f, 0.7f, 0.7f, 1.0f);
     // 1.1 along the z
@@ -1239,7 +1240,9 @@ void DrawConcentricDebugLightObjects(void)
 
 
 // Returns NULL if it didn't find anything
-cMeshObject* findObjectByFriendlyName(std::string nameToFind, bool bSearchChildren)
+cMeshObject* findObjectByFriendlyName(std::string nameToFind, 
+                                      std::vector< cMeshObject* > vec_pMeshObjects,
+                                      bool bSearchChildren)
 {
 
     for (std::vector< cMeshObject* >::iterator itCurrentMesh = vec_pMeshObjects.begin();
@@ -1254,7 +1257,15 @@ cMeshObject* findObjectByFriendlyName(std::string nameToFind, bool bSearchChildr
             return pCurrentMesh;
         }
 
-    }
+        // Search children too? 
+        cMeshObject* pChildMesh = findObjectByFriendlyName(nameToFind,
+                                                           pCurrentMesh->vecChildMeshes,
+                                                           bSearchChildren);
+        if ( pChildMesh )       /* NULL = 0 = false) */
+        {
+            return pChildMesh;
+        }
+    }//for (std::vector< cMeshObject* >::iterator
 
     // Didn't find it. How sad.
     return NULL;
