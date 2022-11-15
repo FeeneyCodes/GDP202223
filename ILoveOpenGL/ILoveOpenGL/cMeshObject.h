@@ -4,6 +4,7 @@
 #include <string>
 #include <glm/glm.hpp>
 #include <glm/vec3.hpp>
+#include <vector>
 
 // This represents the location and orientation, etc. of 
 //	a single mesh object (a bunch of triangles with colours
@@ -40,6 +41,9 @@ public:
 	// Later (after mid-term)
 	std::string textures[8];
 	float textureRatios[8];
+
+	// Child meshes - move with the parent mesh
+	std::vector< cMeshObject* > vecChildMeshes;
 
 };
 

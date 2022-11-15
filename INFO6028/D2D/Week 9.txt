@@ -1,0 +1,15 @@
+More texturing!!
+- Little more 2D stuff
+	- "Imposters" 
+	- Discard transparency
+	- Simple heightmaps
+		- Geometry shader to vertex displacement
+- Cube maps
+	- Skybox
+	- Reflection/Refraction, etc.
+
+Frameword:
+- Chain of responsibility
+- Builder
+
+- "Scene graph"

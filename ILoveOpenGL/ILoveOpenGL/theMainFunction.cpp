@@ -32,44 +32,6 @@
 #include "cBasicTextureManager/cBasicTextureManager.h"
 
 
-// This is all now part of the VAO manager
-// 
-//struct sVertex_XYZ_RGB
-//{
-//    float x, y, z;             // 0 floats from the start
-//    float r, g, b;          // 2 floats from the start
-//                     // Each vertex is 5 floats in size
-//};
-//
-//struct sVertex_XYZ_N_RGBA_UV
-//{
-//    float x, y, z;
-//    float nx, ny, nz;
-//    //uchar red, green, blue, alpha;
-//    float red, green, blue, alpha;
-//    float texture_u, texture_v;
-//};
-//
-//struct sTrianglePLY
-//{
-//    // The 3 vertex index values from the ply file
-//    unsigned int vertexIndices[3];
-//};
-//
-//// The ply file info gets copied into one of these
-//struct sPLYFileInfo
-//{
-//    // Array we will load into
-//    sVertex_XYZ_N_RGBA_UV* pTheModelArray = NULL;   // NULL, 0, nullptr
-//    sTrianglePLY* pTheModelTriangleArray = NULL;
-//
-//    unsigned int numberOfvertices = 0;
-//    unsigned int numberOfTriangles = 0;
-//
-//    // This is the data we are copying to the GPU 
-//    sVertex_XYZ_RGB* vertices = NULL;
-//    unsigned int numberOfVerticesToDraw = 0;
-//};
 
 //sVertex_XYZ_RGB vertices[] =
 //{
@@ -82,11 +44,10 @@
 //        {  (0.0f + 1.0f),  0.6f, 0.0,  1.0f, 0.0f, 0.0f }
 //};
 
-//const unsigned int NUMBER_OF_VERTICES = 100;
-//
-//sVertex_XYZ_RGB* vertices = new sVertex_XYZ_RGB[NUMBER_OF_VERTICES];
 
-glm::vec3 g_cameraEye = glm::vec3(0.0, 100.0, -300.0f);
+
+// glm::vec3 g_cameraEye = glm::vec3(0.0, 100.0, -300.0f);
+glm::vec3 g_cameraEye = glm::vec3(0.0, 2.0, 8.0f);
 glm::vec3 g_cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
 
 cBasicTextureManager* g_pTextureManager = NULL;
@@ -115,6 +76,15 @@ cBasicTextureManager* g_pTextureManager = NULL;
 
 // Call back signatures here
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+
+void DrawObject(cMeshObject* pCurrentMeshObject,
+                glm::mat4x4 mat_PARENT_Model,               // The "parent's" model matrix
+                GLuint shaderID,                            // ID for the current shader
+                cBasicTextureManager* pTextureManager,
+                cVAOManager* pVAOManager,
+                GLint mModel_location,                      // Uniform location of mModel matrix
+                GLint mModelInverseTransform_location);      // Uniform location of mView location
+
 
 static void error_callback(int error, const char* description)
 {
@@ -377,7 +347,7 @@ bool LoadModelTypesIntoVAO(std::string fileTypesToLoadName,
 
         if (pVAOManager->LoadModelIntoVAO(friendlyName, motoDrawInfo, shaderID))
         {
-            std::cout << "Loaded the MOTO model" << std::endl;
+            std::cout << "Loaded the " << friendlyName << " model" << std::endl;
         }
 
     }//while (modelTypeFile
@@ -714,6 +684,11 @@ int main( int argc, char* argv[] )
 // END OF: LOADING the file types into the VAO manager
 // **************************************************************************************
     
+    // Which is the equivalent to:
+    //    cMeshObject* my_pMeshes[10];
+//    std::vector< cMeshObject* > vec_pMeshObjects;
+
+
     // On the heap (we used new and there's a pointer)
     cMeshObject* pObjectToDraw = new cMeshObject();
     pObjectToDraw->meshName = "MOTO";
@@ -744,6 +719,7 @@ int main( int argc, char* argv[] )
     pYellowSubmarine->meshName = "Submarine";
     pYellowSubmarine->friendlyName = "Yellow Submarine";    // Google "Yellow Submarine" to see what drugs in the 60s were like.
     pYellowSubmarine->bUse_RGBA_colour = true;
+    pYellowSubmarine->position = glm::vec3(-10.0f, 0.0f, 0.0f);
     pYellowSubmarine->RGBA_colour = glm::vec4(1.0f, 1.0f, 0.0f, 1.0f);
 //    pYellowSubmarine->isWireframe = true;
 
@@ -767,6 +743,62 @@ int main( int argc, char* argv[] )
 
 
 
+
+    // Drop ship and "child" parts
+    cMeshObject* pDropShip = new cMeshObject();
+    pDropShip->meshName = "DropShip_Hull";
+    pDropShip->bUse_RGBA_colour = true;
+    pDropShip->RGBA_colour = glm::vec4(0.7f, 0.7f, 0.7f, 1.0f);
+    vec_pMeshObjects.push_back(pDropShip);
+
+    cMeshObject* pDropShip_cockpit = new cMeshObject();
+    pDropShip_cockpit->meshName = "DropShip_cockpit";
+    pDropShip_cockpit->bUse_RGBA_colour = true;
+    pDropShip_cockpit->RGBA_colour = glm::vec4(0.7f, 0.7f, 0.7f, 1.0f);
+    // Add as a CHILD of the parent (pDropShip)
+    pDropShip->vecChildMeshes.push_back(pDropShip_cockpit);
+
+    cMeshObject* pDropShip_Windscreen_outside = new cMeshObject();
+    pDropShip_Windscreen_outside->meshName = "DropShip_cockpit";
+    pDropShip_Windscreen_outside->bUse_RGBA_colour = true;
+    pDropShip_Windscreen_outside->RGBA_colour = glm::vec4(0.7f, 0.7f, 0.7f, 1.0f);
+    pDropShip->vecChildMeshes.push_back(pDropShip_Windscreen_outside);
+
+    cMeshObject* pAirBrake_0 = new cMeshObject();
+    pAirBrake_0->meshName = "AirBrake_0";
+    pAirBrake_0->bUse_RGBA_colour = true;
+    pAirBrake_0->RGBA_colour = glm::vec4(0.7f, 0.7f, 0.7f, 1.0f);
+    pDropShip->vecChildMeshes.push_back(pAirBrake_0);
+
+    cMeshObject* pAirBrake_1 = new cMeshObject();
+    pAirBrake_1->meshName = "AirBrake_1";
+    pAirBrake_1->bUse_RGBA_colour = true;
+    pAirBrake_1->RGBA_colour = glm::vec4(0.7f, 0.7f, 0.7f, 1.0f);
+    pDropShip->vecChildMeshes.push_back(pAirBrake_1);
+
+    cMeshObject* pAirBrake_2 = new cMeshObject();
+    pAirBrake_2->meshName = "AirBrake_2";
+    pAirBrake_2->bUse_RGBA_colour = true;
+    pAirBrake_2->RGBA_colour = glm::vec4(0.7f, 0.7f, 0.7f, 1.0f);
+    pDropShip->vecChildMeshes.push_back(pAirBrake_2);
+
+
+    cMeshObject* pEngine_1_front_port_left = new cMeshObject();
+    pEngine_1_front_port_left->meshName = "Engine_1_front_port_left";
+    pEngine_1_front_port_left->bUse_RGBA_colour = true;
+    pEngine_1_front_port_left->RGBA_colour = glm::vec4(0.7f, 0.7f, 0.7f, 1.0f);
+    // 1.1 along the z
+    // 0.1 along the y
+    // 0.5601f along the x
+    // These are approximately the values I used to move the original 
+    //  model the "new" origin (so I could rotate it around the x axis)
+    pEngine_1_front_port_left->position.z = 1.1f;
+    pEngine_1_front_port_left->position.y = 0.1f;
+    pEngine_1_front_port_left->position.x = 0.5601f;
+    pDropShip->vecChildMeshes.push_back(pEngine_1_front_port_left);
+
+
+
 //    // Add all these to an array:
 //    cMeshObject* my_pMeshes[10];
 //    my_pMeshes[0] = pObjectToDraw;          // "MOTO"
@@ -780,9 +812,6 @@ int main( int argc, char* argv[] )
 //
 //    unsigned int numberOfObjectsToDraw = 5;
 
-    // Which is the equivalent to:
-    //    cMeshObject* my_pMeshes[10];
-    std::vector< cMeshObject* > vec_pMeshObjects;
 
 
     vec_pMeshObjects.push_back(pObjectToDraw);          // "MOTO"
@@ -979,13 +1008,18 @@ int main( int argc, char* argv[] )
         pTerrain->textureRatios[1] += 0.001;      // Taylor Swift
 
 
+        // HACK: Rotate the drop ship
+        pDropShip->rotation.y += glm::radians(-0.01f);
+
+//        pEngine_1_front_port_left->rotation.x += glm::radians(-0.025f);
+
 
         DrawConcentricDebugLightObjects();
 
         float ratio;
         int width, height;
 //        mat4x4 m, p, mvp;
-        glm::mat4x4 matModel;
+//        glm::mat4x4 matModel;
         glm::mat4x4 matProjection;
         glm::mat4x4 matView; 
 
@@ -1028,6 +1062,12 @@ int main( int argc, char* argv[] )
 
 
 
+        // Set once per scene (not per object)
+        glUniformMatrix4fv(mView_location, 1, GL_FALSE, glm::value_ptr(matView));
+        glUniformMatrix4fv(mProjection_location, 1, GL_FALSE, glm::value_ptr(matProjection));
+
+
+
         //    ____  _             _            __                           
         //   / ___|| |_ __ _ _ __| |_    ___  / _|  ___  ___ ___ _ __   ___ 
         //   \___ \| __/ _` | '__| __|  / _ \| |_  / __|/ __/ _ \ '_ \ / _ \
@@ -1043,213 +1083,24 @@ int main( int argc, char* argv[] )
         {
             cMeshObject* pCurrentMeshObject = *itCurrentMesh;        // * is the iterator access thing
 
+
+            // Where do I put THIS?? 
+            // i.e. if the object is invisble by the child objects ARE visible...?
             if ( ! pCurrentMeshObject->bIsVisible )
             {
                 // Skip the rest of the loop
                 continue;
             }
-
-    // 
-            // Don't draw any "back facing" triangles
-            glCullFace(GL_BACK);
-
-            // Turn on depth buffer test at draw time
-            glEnable(GL_DEPTH_TEST);
-
-            // Make an "identity matrix"
-     //       mat4x4_identity(m);
-            matModel = glm::mat4x4(1.0f);  // identity matrix
-
-            // Move the object 
-            glm::mat4 matTranslation = glm::translate(glm::mat4(1.0f),
-                                                      pCurrentMeshObject->position);
-
-            // Rotate the object
-            glm::mat4 matRoationZ = glm::rotate(glm::mat4(1.0f), 
-                                                pCurrentMeshObject->rotation.z,                // Angle to rotate
-                                                glm::vec3(0.0f, 0.0f, 1.0f));       // Axis to rotate around
-
-            glm::mat4 matRoationY = glm::rotate(glm::mat4(1.0f), 
-                                                pCurrentMeshObject->rotation.y,                // Angle to rotate
-                                                glm::vec3(0.0f, 1.0f, 0.0f));       // Axis to rotate around
-
-            glm::mat4 matRoationX = glm::rotate(glm::mat4(1.0f), 
-                                                pCurrentMeshObject->rotation.x,                // Angle to rotate
-                                                glm::vec3(1.0f, 0.0f, 0.0f));       // Axis to rotate around
-
-            // Scale the object
-            float uniformScale = pCurrentMeshObject->scale;
-            glm::mat4 matScale = glm::scale(glm::mat4(1.0f),
-                                            glm::vec3(uniformScale, uniformScale, uniformScale));
-
-            // Applying all these transformations to the MODEL 
-            // (or "world" matrix)
-            matModel = matModel * matTranslation;
-
-            matModel = matModel * matRoationX;
-            matModel = matModel * matRoationY;
-            matModel = matModel * matRoationZ;
-
-            matModel = matModel * matScale;
-
-//            matModel = 
-//                 matModel
-//               * matTranslation
-//               * matRoationX
-//               * matRoationY
-//               * matRoationZ
-//               * matScale;
-
-
-    //        mat4x4_mul(mvp, p, m);
-//            mvp = matProjection * matView * matModel;
-//            glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(mvp));
-
-            // uniform mat4 mModel;
-            // uniform mat4 mView;
-            // uniform mat4 mProjection;
-            //GLint mModel_location = glGetUniformLocation(shaderID, "mModel");       // program
-            //GLint mView_location = glGetUniformLocation(shaderID, "mView");       // program
-            //GLint mProjection_location = glGetUniformLocation(shaderID, "mProjection");       // program
-            glUniformMatrix4fv(mModel_location, 1, GL_FALSE, glm::value_ptr(matModel));
-            glUniformMatrix4fv(mView_location, 1, GL_FALSE, glm::value_ptr(matView));
-            glUniformMatrix4fv(mProjection_location, 1, GL_FALSE, glm::value_ptr(matProjection));
             
-            // Inverse transpose of a 4x4 matrix removes the right column and lower row
-            // Leaving only the rotation (the upper left 3x3 matrix values)
-            glm::mat4 mModelInverseTransform = glm::inverse(glm::transpose(matModel));
-            glUniformMatrix4fv(mModelInverseTransform_location, 1, GL_FALSE, glm::value_ptr(mModelInverseTransform));
+            // The parent's model matrix is set to the identity
+            glm::mat4x4 matModel = glm::mat4x4(1.0f);
 
-//            glPointSize(15.0f);
+            // All the drawing code has been moved to the DrawObject function
+            DrawObject(pCurrentMeshObject, 
+                       matModel,                
+                       shaderID, ::g_pTextureManager,
+                       pVAOManager, mModel_location, mModelInverseTransform_location);
 
-            // Wireframe
-            if ( pCurrentMeshObject->isWireframe )
-            {
-                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);      // GL_POINT, GL_LINE, GL_FILL
-            }
-            else 
-            {
-                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);      
-            }
-
-
-            // Setting the colour in the shader
-            // uniform vec4 RGBA_Colour;
-
-            GLint RGBA_Colour_ULocID = glGetUniformLocation(shaderID, "RGBA_Colour");
-
-            // Turn on alpha transparency for everything
-            // Maybe: if ( alpha < 1.0 ) ...
-            glEnable(GL_BLEND); 
-            // Basic alpha transparency:
-            // 0.5 --> 0.5 what was already on the colour buffer 
-            //       + 0.5 of this object being drawn
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-            glUniform4f(RGBA_Colour_ULocID,
-                        pCurrentMeshObject->RGBA_colour.r,
-                        pCurrentMeshObject->RGBA_colour.g,
-                        pCurrentMeshObject->RGBA_colour.b,
-                        pCurrentMeshObject->RGBA_colour.w);     // Transparency
-
-
-            GLint bUseRGBA_Colour_ULocID = glGetUniformLocation(shaderID, "bUseRGBA_Colour");
-
-            if ( pCurrentMeshObject->bUse_RGBA_colour )
-            {
-                glUniform1f(bUseRGBA_Colour_ULocID, (GLfloat)GL_TRUE );
-            }
-            else
-            {
-                glUniform1f(bUseRGBA_Colour_ULocID, (GLfloat)GL_FALSE);
-            }
-
-            // Copy specular object colour and power. 
-            GLint specularColour_ULocID = glGetUniformLocation(shaderID, "specularColour");
-
-            glUniform4f(specularColour_ULocID,
-                        pCurrentMeshObject->specular_colour_and_power.r,
-                        pCurrentMeshObject->specular_colour_and_power.g,
-                        pCurrentMeshObject->specular_colour_and_power.b,
-                        pCurrentMeshObject->specular_colour_and_power.w);
-
-            //uniform bool bDoNotLight;	
-            GLint bDoNotLight_Colour_ULocID = glGetUniformLocation(shaderID, "bDoNotLight");
-
-            if ( pCurrentMeshObject->bDoNotLight )
-            {
-                glUniform1f(bDoNotLight_Colour_ULocID, (GLfloat)GL_TRUE );
-            }
-            else
-            {
-                glUniform1f(bDoNotLight_Colour_ULocID, (GLfloat)GL_FALSE);
-            }
-
-
-            // Set up the textures on this model
-            std::string texture0Name = pCurrentMeshObject->textures[0];  // Rice field
-            std::string texture1Name = pCurrentMeshObject->textures[1];  // Taylor Swift
-
-
-            GLuint texture00Number = ::g_pTextureManager->getTextureIDFromName(texture0Name);
-
-            // Choose the texture Unit I want
-            GLuint texture00Unit = 0;			// Texture unit go from 0 to 79
-            glActiveTexture(texture00Unit + GL_TEXTURE0);	// GL_TEXTURE0 = 33984
-
-            // Pick the texture 
-            // 1. make it "active" (binding)
-            // 2. Attatches it the current ACTIVE TEXTURE UNIT
-            glBindTexture(GL_TEXTURE_2D, texture00Number);      
-
-            // glBindTextureUnit( texture00Unit, texture00Number );	// OpenGL 4.5+ only
-            // 
-            // uniform sampler2D texture0;
-           
-            GLint texture0_UL = glGetUniformLocation( shaderID, "texture0");
-            glUniform1i(texture0_UL, texture00Unit);
-
-
-            // Same for texture #1
-            GLuint texture01Number = ::g_pTextureManager->getTextureIDFromName(texture1Name);
-            GLuint texture01Unit = 1;			// Texture unit go from 0 to 79
-            glActiveTexture(texture01Unit + GL_TEXTURE0);	// GL_TEXTURE0 = 33984
-            glBindTexture(GL_TEXTURE_2D, texture01Number);
-            GLint texture1_UL = glGetUniformLocation(shaderID, "texture1");
-            glUniform1i(texture1_UL, texture01Unit);
-
-            // Do that for the other 6 textures... FUN!
-
-
-            // uniform vec4 texRatio_0_3;
-            GLint texRatio_0_3 = glGetUniformLocation( shaderID, "texRatio_0_3");
-            glUniform4f( texRatio_0_3,
-                         pCurrentMeshObject->textureRatios[0],
-                         pCurrentMeshObject->textureRatios[1],
-                         pCurrentMeshObject->textureRatios[2],
-                         pCurrentMeshObject->textureRatios[3]);
-
-
-            // Choose the VAO that has the model we want to draw...
-            sModelDrawInfo drawingInformation;
-            if ( pVAOManager->FindDrawInfoByModelName(pCurrentMeshObject->meshName, drawingInformation) )
-            {
-                glBindVertexArray(drawingInformation.VAO_ID);
-
-                glDrawElements(GL_TRIANGLES, 
-                               drawingInformation.numberOfIndices, 
-                               GL_UNSIGNED_INT,
-                               (void*) 0 );
-
-                glBindVertexArray(0);
-
-            }
-            else
-            {
-                // Didn't find that model
-                std::cout << "Error: didn't find model to draw." << std::endl;
-
-            }//if ( pVAOManager...
 
         }//for ( unsigned int index
         //    _____           _          __                           
@@ -1383,4 +1234,28 @@ void DrawConcentricDebugLightObjects(void)
         pDebugSphere_5->position = glm::vec3(::g_pTheLightManager->vecTheLights[0].position);
     }
     return;
+}
+
+
+
+// Returns NULL if it didn't find anything
+cMeshObject* findObjectByFriendlyName(std::string nameToFind, bool bSearchChildren)
+{
+
+    for (std::vector< cMeshObject* >::iterator itCurrentMesh = vec_pMeshObjects.begin();
+         itCurrentMesh != vec_pMeshObjects.end();
+         itCurrentMesh++)
+    {
+        cMeshObject* pCurrentMesh = *itCurrentMesh;
+
+        if ( pCurrentMesh->friendlyName == nameToFind )
+        {
+            // Early exit
+            return pCurrentMesh;
+        }
+
+    }
+
+    // Didn't find it. How sad.
+    return NULL;
 }

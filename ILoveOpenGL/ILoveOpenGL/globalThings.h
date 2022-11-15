@@ -7,8 +7,15 @@
 
 #include "cLightManager.h"
 
+#include <vector>
+
 // extern means the variable isn't actually here...
 // ...it's somewhere else (in a .cpp file somewhere)
 extern cLightManager* g_pTheLightManager;
+
+extern std::vector< cMeshObject* > vec_pMeshObjects;
+
+// Returns NULL if it didn't find anything
+cMeshObject* findObjectByFriendlyName(std::string name, bool bSearchChildren = true);
 
 #endif

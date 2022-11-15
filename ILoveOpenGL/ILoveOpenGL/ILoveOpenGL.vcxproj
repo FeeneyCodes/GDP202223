@@ -148,6 +148,7 @@
     <ClCompile Include="cShaderManager.cpp" />
     <ClCompile Include="cVAOManager\c3DModelFileLoader.cpp" />
     <ClCompile Include="cVAOManager\cVAOManager.cpp" />
+    <ClCompile Include="DrawObject_function.cpp" />
     <ClCompile Include="FunWithMaps.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>

@@ -84,12 +84,12 @@ void key_callback(GLFWwindow* window,
             // Move the camera
             // AWSD   AD - left and right
             //        WS - forward and back
-            float CAMERA_MOVE_SPEED = 1.0f;
+            float CAMERA_MOVE_SPEED = 0.1f;
             // If shift is down, move 10x faster
             // This allows for other mods being down, too
             if ( (mods & GLFW_MOD_SHIFT) == GLFW_MOD_SHIFT )
             {
-                CAMERA_MOVE_SPEED *= 10.0f;
+                CAMERA_MOVE_SPEED *= 1.0f;
             }
 
 
