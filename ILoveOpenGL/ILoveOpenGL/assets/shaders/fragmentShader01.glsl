@@ -20,6 +20,9 @@ out vec4 pixelOutputColour;
 uniform vec4 RGBA_Colour;		// aka "diffuse" RGB + Alpha (w)
 uniform bool bUseRGBA_Colour;
 
+// This is for the flame alpha transparency object
+uniform bool bIsFlameObject;
+
 
 //uniform vec4 diffuseColour;		// RGB + Alpha (w)
 uniform vec4 specularColour;			// RGB object hightlight COLOUR
@@ -81,6 +84,21 @@ void main()
 
 	float alphaTransparency = RGBA_Colour.w;
 
+	// For the exhaust of the drop ship
+	if (bIsFlameObject)
+	{
+		// DON'T light. Apply the texture. Use colour as alpha
+		vec3 flameColour = texture( texture0, fUVx2.st ).rgb;	
+		
+		pixelOutputColour.rgb = flameColour;
+		
+		// Set the alpha transparency based on the colour.
+		float RGBcolourSum = pixelOutputColour.r + pixelOutputColour.g + pixelOutputColour.b;
+		pixelOutputColour.a = max( ((RGBcolourSum - 0.1f) / 3.0f), 0.0f);
+		
+		// Exit early so bypasses lighting
+		return;
+	}
 
 	if ( bUseRGBA_Colour )
 	{
@@ -120,7 +138,7 @@ void main()
 	// then it's reading whatever the 4th value of the output is:
 	pixelOutputColour = vec4(outColour.rgb, alphaTransparency);
 	
-	float amountOfAmbientLight = 0.35f;
+	float amountOfAmbientLight = 0.15f;
 	pixelOutputColour.rgb += (materialColour.rgb * amountOfAmbientLight);
 	
 //	pixelOutputColour.rgb *= 0.0001;

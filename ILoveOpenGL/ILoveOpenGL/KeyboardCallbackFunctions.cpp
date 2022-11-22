@@ -38,6 +38,10 @@ bool bEnableDebugLightingObjects = true;
 //// Shift key but I don't care if anything else is down, too
 //if ((mods & GLFW_MOD_SHIFT) == GLFW_MOD_SHIFT)
 
+
+// HACK: Engine thrust (because I don't have a "ship" or actor object...
+float g_EngineThrust = 1.0f;
+
 void key_callback(GLFWwindow* window,
                          int key, int scancode,
                          int action, int mods)
@@ -95,8 +99,27 @@ void key_callback(GLFWwindow* window,
         {
             pDropShipEngine1->rotation.x -= glm::radians(1.0f);
         }
+        
     }//if ( pDropShipEngine1 )
-                                                             
+    
+    // Change the thrust of the engine (by changing the scale of the imposter)
+    cMeshObject* pEngine_1_Thrust
+        = findObjectByFriendlyName("Engine_1_Thrust", vec_pMeshObjects);
+    if (pEngine_1_Thrust)
+    {
+        if (key == GLFW_KEY_U)     // Decrease the thrust
+        {
+            ::g_EngineThrust *= 0.99f;      // Decrease by 1%
+        }
+        if (key == GLFW_KEY_I)     // Increase the thrust
+        {
+            ::g_EngineThrust *= 1.01f;      // Increase by 1%
+        }
+        pEngine_1_Thrust->scaleXYZ.z = ::g_EngineThrust;
+        // Adjust the thrust a little each frame (so it "flickers" in length)
+        pEngine_1_Thrust->scaleXYZ.z += getRandomFloatInRange(-0.1f, 0.1f);
+
+    }//if ( pEngine_1_Thrust )                                                             
 
 
     switch (theEditMode)

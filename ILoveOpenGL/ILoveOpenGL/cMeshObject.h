@@ -21,7 +21,13 @@ public:
 
 	glm::vec3 position;     // 0,0,0 (origin)
 	glm::vec3 rotation;     // 0,0,0 ration around each Euler axis
-	float scale;
+//	float scale;
+	glm::vec3 scaleXYZ;
+	void SetUniformScale(float newScale)
+	{
+		this->scaleXYZ = glm::vec3(newScale, newScale, newScale);
+	}
+
     bool isWireframe;		// false
 
 	// This is the "diffuse" colour
@@ -41,6 +47,7 @@ public:
 	// Later (after mid-term)
 	std::string textures[8];
 	float textureRatios[8];
+
 
 	// Child meshes - move with the parent mesh
 	std::vector< cMeshObject* > vecChildMeshes;

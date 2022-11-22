@@ -94,7 +94,7 @@ static void error_callback(int error, const char* description)
 
 // From here: https://stackoverflow.com/questions/5289613/generate-random-float-between-two-floats/5289624
 
-float RandomFloat(float a, float b) {
+float getRandomFloatInRange(float a, float b) {
     float random = ((float)rand()) / (float)RAND_MAX;
     float diff = b - a;
     float r = random * diff;
@@ -575,7 +575,7 @@ int main( int argc, char* argv[] )
 
     ::g_pTheLightManager->vecTheLights[0].position = glm::vec4(10.0f, 10.0f, 0.0f, 1.0f);
     ::g_pTheLightManager->vecTheLights[0].diffuse = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-    ::g_pTheLightManager->vecTheLights[0].atten = glm::vec4(0.1f, 0.01f, 0.0000001f, 1.0f);
+    ::g_pTheLightManager->vecTheLights[0].atten = glm::vec4(0.1f, 0.2f, 1.4e-7f, 1.0f);
 
 //    ::g_pTheLightManager->vecTheLights[0].param2.x = 1.0f;
     ::g_pTheLightManager->vecTheLights[0].TurnOn();
@@ -793,11 +793,30 @@ int main( int argc, char* argv[] )
     // 0.5601f along the x
     // These are approximately the values I used to move the original 
     //  model the "new" origin (so I could rotate it around the x axis)
-    pEngine_1_front_port_left->position.z = 1.1f;
+    pEngine_1_front_port_left->position.z = 1.0f;
     pEngine_1_front_port_left->position.y = 0.1f;
     pEngine_1_front_port_left->position.x = 0.5601f;
     pDropShip->vecChildMeshes.push_back(pEngine_1_front_port_left);
 
+    cMeshObject* pEngine_1_Thrust = new cMeshObject();
+    pEngine_1_Thrust->meshName = "Quad_x3_2_sided_axial_imposter_base_on_XY_axis";
+    pEngine_1_Thrust->friendlyName = "Engine_1_Thrust";
+//    pEngine_1_Thrust->bUse_RGBA_colour = true;
+//    pEngine_1_Thrust->RGBA_colour = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+    pEngine_1_Thrust->textures[0] = "Long_blue_Jet_Flame.bmp";
+    pEngine_1_Thrust->textureRatios[0] = 1.0f;
+
+    pEngine_1_Thrust->rotation.x = glm::radians(180.0f);
+
+    pEngine_1_Thrust->position.x = 1.2f;
+    pEngine_1_Thrust->position.y = 0.1f;
+    pEngine_1_Thrust->position.z = -0.18f;
+
+    pEngine_1_Thrust->scaleXYZ.x = 0.25f;
+    pEngine_1_Thrust->scaleXYZ.y = 0.25f;
+    pEngine_1_Thrust->scaleXYZ.z = 1.0f;        // Length of the "flame"
+
+    pEngine_1_front_port_left->vecChildMeshes.push_back(pEngine_1_Thrust);
 
 
 //    // Add all these to an array:
@@ -833,7 +852,7 @@ int main( int argc, char* argv[] )
     pDebugSphere_1->bUse_RGBA_colour = true;
     pDebugSphere_1->RGBA_colour = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
     pDebugSphere_1->isWireframe = true;
-    pDebugSphere_1->scale = 1.0f;
+    pDebugSphere_1->SetUniformScale(1.0f);
 
     pDebugSphere_1->bDoNotLight = true;
 
@@ -845,7 +864,7 @@ int main( int argc, char* argv[] )
     pDebugSphere_2->bUse_RGBA_colour = true;
     pDebugSphere_2->RGBA_colour = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
     pDebugSphere_2->isWireframe = true;
-    pDebugSphere_2->scale = 1.0f;
+    pDebugSphere_2->SetUniformScale(1.0f);
     pDebugSphere_2->bDoNotLight = true;
     vec_pMeshObjects.push_back(pDebugSphere_2);
 
@@ -855,7 +874,7 @@ int main( int argc, char* argv[] )
     pDebugSphere_3->bUse_RGBA_colour = true;
     pDebugSphere_3->RGBA_colour = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
     pDebugSphere_3->isWireframe = true;
-    pDebugSphere_3->scale = 1.0f;
+    pDebugSphere_3->SetUniformScale(1.0f);
     pDebugSphere_3->bDoNotLight = true;
     vec_pMeshObjects.push_back(pDebugSphere_3);
 
@@ -865,7 +884,7 @@ int main( int argc, char* argv[] )
     pDebugSphere_4->bUse_RGBA_colour = true;
     pDebugSphere_4->RGBA_colour = glm::vec4(0.0f, 1.0f, 1.0f, 1.0f);
     pDebugSphere_4->isWireframe = true;
-    pDebugSphere_4->scale = 1.0f;
+    pDebugSphere_4->SetUniformScale(1.0f);
     pDebugSphere_4->bDoNotLight = true;
     vec_pMeshObjects.push_back(pDebugSphere_4);
 
@@ -875,7 +894,7 @@ int main( int argc, char* argv[] )
     pDebugSphere_5->bUse_RGBA_colour = true;
     pDebugSphere_5->RGBA_colour = glm::vec4(0.0f, 1.0f, 1.0f, 1.0f);
     pDebugSphere_5->isWireframe = true;
-    pDebugSphere_5->scale = 1.0f;
+    pDebugSphere_5->SetUniformScale(1.0f);
     pDebugSphere_5->bDoNotLight = true;
     vec_pMeshObjects.push_back(pDebugSphere_5);
 
@@ -975,13 +994,17 @@ int main( int argc, char* argv[] )
     }
     ::g_pTextureManager->Create2DTextureFromBMPFile("taylor-swift-tour-dates-fan-wedding-plans.bmp");
 
+    ::g_pTextureManager->Create2DTextureFromBMPFile("Long_blue_Jet_Flame.bmp");
 
     std::cout.flush();
 
 
     while ( ! glfwWindowShouldClose(window) )
     {
-        // HACK
+
+        
+// HACK: Stuff that changes every frame
+// ***************************************************
 //        ::g_pTheLightManager->vecTheLights[0].position.x += 0.05f;
 
         ::g_pTheLightManager->CopyLightInformationToShader(shaderID);
@@ -991,6 +1014,13 @@ int main( int argc, char* argv[] )
 //                    lightPosition.y,
 //                    lightPosition.z,
 //                    1.0f);
+
+        cMeshObject* pEngine_1_Thrust = findObjectByFriendlyName("Engine_1_Thrust", vec_pMeshObjects);
+        if (pEngine_1_Thrust)
+        {
+             pEngine_1_Thrust->scaleXYZ.z += getRandomFloatInRange(-0.1f, 0.1f);
+        }
+
 
 
         // Point the spotlight at the submarine
@@ -1005,8 +1035,9 @@ int main( int argc, char* argv[] )
 
 
         // Adjust the texture ratios
-        pTerrain->textureRatios[0] -= 0.001;      // Rice field
-        pTerrain->textureRatios[1] += 0.001;      // Taylor Swift
+        pTerrain->textureRatios[0] -= 0.001f;      // Rice field
+        pTerrain->textureRatios[1] += 0.001f;      // Taylor Swift
+// ***************************************************
 
 
         // HACK: Rotate the drop ship
@@ -1189,7 +1220,7 @@ void DrawConcentricDebugLightObjects(void)
             ::g_pTheLightManager->vecTheLights[0].atten.y,
             ::g_pTheLightManager->vecTheLights[0].atten.z);
 
-        pDebugSphere_2->scale = distance75percent;
+        pDebugSphere_2->SetUniformScale(distance75percent);
         pDebugSphere_2->position = glm::vec3(::g_pTheLightManager->vecTheLights[0].position);
     }
 
@@ -1203,7 +1234,7 @@ void DrawConcentricDebugLightObjects(void)
             ::g_pTheLightManager->vecTheLights[0].atten.y,
             ::g_pTheLightManager->vecTheLights[0].atten.z);
 
-        pDebugSphere_3->scale = distance50percent;
+        pDebugSphere_3->SetUniformScale(distance50percent);
         pDebugSphere_3->position = glm::vec3(::g_pTheLightManager->vecTheLights[0].position);
     }
 
@@ -1217,7 +1248,7 @@ void DrawConcentricDebugLightObjects(void)
             ::g_pTheLightManager->vecTheLights[0].atten.y,
             ::g_pTheLightManager->vecTheLights[0].atten.z);
 
-        pDebugSphere_4->scale = distance25percent;
+        pDebugSphere_4->SetUniformScale(distance25percent);
         pDebugSphere_4->position = glm::vec3(::g_pTheLightManager->vecTheLights[0].position);
     }
 
@@ -1231,7 +1262,7 @@ void DrawConcentricDebugLightObjects(void)
             ::g_pTheLightManager->vecTheLights[0].atten.y,
             ::g_pTheLightManager->vecTheLights[0].atten.z);
 
-        pDebugSphere_5->scale = distance5percent;
+        pDebugSphere_5->SetUniformScale(distance5percent);
         pDebugSphere_5->position = glm::vec3(::g_pTheLightManager->vecTheLights[0].position);
     }
     return;

@@ -20,4 +20,6 @@ cMeshObject* findObjectByFriendlyName(std::string name,
 									  std::vector< cMeshObject* > vec_pMeshObjects,
 									  bool bSearchChildren = true);
 
+float getRandomFloatInRange(float a, float b);
+
 #endif

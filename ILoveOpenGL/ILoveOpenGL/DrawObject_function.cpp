@@ -29,11 +29,32 @@ void DrawObject(cMeshObject* pCurrentMeshObject,
 
 {
 
-                // Don't draw any "back facing" triangles
+    // Don't draw any "back facing" triangles
     glCullFace(GL_BACK);
+    glEnable(GL_CULL_FACE);
 
     // Turn on depth buffer test at draw time
     glEnable(GL_DEPTH_TEST);
+
+
+    // HACK: Check if this is a flame object
+    GLint bIsFlameObject_UniformLocation = glGetUniformLocation(shaderID, "bIsFlameObject");
+    // HACK: I'm checking to see if the texture matches the flame object
+    if ( pCurrentMeshObject->textures[0] == "Long_blue_Jet_Flame.bmp" )
+    {
+        glUniform1f(bIsFlameObject_UniformLocation, (GLfloat)GL_TRUE);
+//        glDisable(GL_DEPTH_TEST);
+//        glDepthFunc(GL_NEVER); // We'll talk about this when we talk about the stencil buffer
+        glDepthMask(GL_FALSE);      // DON'T write to the depth buffer
+    }
+    else
+    {
+        glUniform1f(bIsFlameObject_UniformLocation, (GLfloat)GL_FALSE);
+//        glDepthFunc(GL_LESS); // We'll talk about this when we talk about the stencil buffer
+        glDepthMask(GL_TRUE);      // DON'T write to the depth buffer
+    }
+        
+
 
 
     glm::mat4x4 matModel = mat_PARENT_Model;  // identity matrix;
@@ -61,9 +82,13 @@ void DrawObject(cMeshObject* pCurrentMeshObject,
                                         glm::vec3(1.0f, 0.0f, 0.0f));       // Axis to rotate around
 
     // Scale the object
-    float uniformScale = pCurrentMeshObject->scale;
+//    float uniformScale = pCurrentMeshObject->scale;
+//    glm::mat4 matScale = glm::scale(glm::mat4(1.0f),
+//                                    glm::vec3(uniformScale, uniformScale, uniformScale));
     glm::mat4 matScale = glm::scale(glm::mat4(1.0f),
-                                    glm::vec3(uniformScale, uniformScale, uniformScale));
+                                    glm::vec3(pCurrentMeshObject->scaleXYZ.x,
+                                              pCurrentMeshObject->scaleXYZ.y,
+                                              pCurrentMeshObject->scaleXYZ.z));
 
     // Applying all these transformations to the MODEL 
     // (or "world" matrix)
