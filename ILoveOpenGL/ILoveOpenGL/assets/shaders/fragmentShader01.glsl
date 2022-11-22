@@ -23,6 +23,10 @@ uniform bool bUseRGBA_Colour;
 // This is for the flame alpha transparency object
 uniform bool bIsFlameObject;
 
+// This is for the discard transparency 'bullet holes' example on the ship
+// Assumes texture07 is the black and white discard texture
+uniform bool bUseDiscardTexture;
+
 
 //uniform vec4 diffuseColour;		// RGB + Alpha (w)
 uniform vec4 specularColour;			// RGB object hightlight COLOUR
@@ -52,6 +56,9 @@ uniform sampler2D texture7;		// "Lady Gaga"
 
 uniform vec4 texRatio_0_3;		// x = texture0, y = texture1, etc. 0 to 1
 uniform vec4 texRatio_4_7;		// 0 to 1
+
+uniform samplerCube skyboxTexture;
+
 
 struct sLight
 {
@@ -95,10 +102,30 @@ void main()
 		// Set the alpha transparency based on the colour.
 		float RGBcolourSum = pixelOutputColour.r + pixelOutputColour.g + pixelOutputColour.b;
 		pixelOutputColour.a = max( ((RGBcolourSum - 0.1f) / 3.0f), 0.0f);
-		
+	
+	
 		// Exit early so bypasses lighting
 		return;
 	}
+	
+	if ( bUseDiscardTexture )
+	{	
+		// Compare the colour in the texture07 black and white texture
+		// If it's 'black enough' then don't draw the pixel
+		// NOTE: I'm only sampling from the red 
+		// (since it's black and white, all channels would be the same)
+		float greyscalevalue = texture( texture7, fUVx2.st ).r;
+		
+		// Here, 0.5 is "black enough" 
+		if ( greyscalevalue < 0.5f )
+		{
+			discard;
+		}
+	}
+	
+	
+
+	
 
 	if ( bUseRGBA_Colour )
 	{
@@ -140,6 +167,12 @@ void main()
 	
 	float amountOfAmbientLight = 0.15f;
 	pixelOutputColour.rgb += (materialColour.rgb * amountOfAmbientLight);
+	
+	
+// HACK: Apply the skybox to the object
+	vec3 cubeMapColour = texture( skyboxTexture, fNormal.xyz ).rgb;
+	pixelOutputColour.rgb *= 0.00001f;
+	pixelOutputColour.rgb += cubeMapColour.rgb;
 	
 //	pixelOutputColour.rgb *= 0.0001;
 //	pixelOutputColour.rgb += materialColour.rgb;

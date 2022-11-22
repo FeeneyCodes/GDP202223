@@ -749,6 +749,9 @@ int main( int argc, char* argv[] )
     pDropShip->meshName = "DropShip_Hull";
     pDropShip->bUse_RGBA_colour = true;
     pDropShip->RGBA_colour = glm::vec4(0.7f, 0.7f, 0.7f, 1.0f);
+    // Being used as a stencil mask
+    pDropShip->textures[7] = "cobblestones_stencil_mask.bmp";
+
     vec_pMeshObjects.push_back(pDropShip);
 
     cMeshObject* pDropShip_cockpit = new cMeshObject();
@@ -995,6 +998,28 @@ int main( int argc, char* argv[] )
     ::g_pTextureManager->Create2DTextureFromBMPFile("taylor-swift-tour-dates-fan-wedding-plans.bmp");
 
     ::g_pTextureManager->Create2DTextureFromBMPFile("Long_blue_Jet_Flame.bmp");
+
+    ::g_pTextureManager->Create2DTextureFromBMPFile("cobblestones_stencil_mask.bmp");
+
+    // Load a skybox
+    // Here's an example of the various sides: http://www.3dcpptutorials.sk/obrazky/cube_map.jpg
+    std::string errorString = "";
+    if ( ::g_pTextureManager->CreateCubeTextureFromBMPFiles("TropicalSunnyDay",
+                                                       "TropicalSunnyDayRight2048.bmp", /* positive X */
+                                                       "TropicalSunnyDayLeft2048.bmp",  /* negative X */
+                                                       "TropicalSunnyDayUp2048.bmp",    /* positive Y */
+                                                       "TropicalSunnyDayDown2048.bmp",  /* negative Y */
+                                                       "TropicalSunnyDayBack2048.bmp",  /* positive Z */
+                                                       "TropicalSunnyDayFront2048.bmp", /* negative Z */
+                                                       true, errorString) )
+    {
+        std::cout << "Loaded the tropical sunny day cube map OK" << std::endl;
+    }
+    else
+    {
+        std::cout << "ERROR: Didn't load the tropical sunny day cube map. How sad." << std::endl;
+        std::cout << "(because: " << errorString << std::endl;
+    }
 
     std::cout.flush();
 

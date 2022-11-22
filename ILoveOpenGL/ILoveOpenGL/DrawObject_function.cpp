@@ -37,6 +37,7 @@ void DrawObject(cMeshObject* pCurrentMeshObject,
     glEnable(GL_DEPTH_TEST);
 
 
+// *********************************************************
     // HACK: Check if this is a flame object
     GLint bIsFlameObject_UniformLocation = glGetUniformLocation(shaderID, "bIsFlameObject");
     // HACK: I'm checking to see if the texture matches the flame object
@@ -53,8 +54,32 @@ void DrawObject(cMeshObject* pCurrentMeshObject,
 //        glDepthFunc(GL_LESS); // We'll talk about this when we talk about the stencil buffer
         glDepthMask(GL_TRUE);      // DON'T write to the depth buffer
     }
+// *********************************************************
         
+// *********************************************************
+    // HACK: Check if this is the drop ship mesh
+    GLint bUseDiscardTexture_UniformLocation = glGetUniformLocation(shaderID, "bUseDiscardTexture");
+    // HACK: I'm checking to see if the texture matches the flame object
+    if ( pCurrentMeshObject->meshName == "DropShip_Hull" )
+    {
+        glUniform1f(bUseDiscardTexture_UniformLocation, (GLfloat)GL_TRUE);
+    }
+    else
+    {
+        glUniform1f(bUseDiscardTexture_UniformLocation, (GLfloat)GL_FALSE);
+    }
+    // Using texture #7 as the discard texture
 
+    // This texture assignment is the same steps as with any other texture
+    std::string texture7Name = pCurrentMeshObject->textures[7];
+    GLuint texture07Number = pTextureManager->getTextureIDFromName(texture7Name);
+    GLuint texture07Unit = 7;			// Texture unit go from 0 to 79
+    glActiveTexture(texture07Unit + GL_TEXTURE0);	// GL_TEXTURE0 = 33984
+    glBindTexture(GL_TEXTURE_2D, texture07Number);
+    GLint texture7_UL = glGetUniformLocation(shaderID, "texture7");
+    glUniform1i(texture7_UL, texture07Unit);
+
+// *********************************************************
 
 
     glm::mat4x4 matModel = mat_PARENT_Model;  // identity matrix;
@@ -176,6 +201,7 @@ void DrawObject(cMeshObject* pCurrentMeshObject,
     // Set up the textures on this model
     std::string texture0Name = pCurrentMeshObject->textures[0];  // Rice field
     std::string texture1Name = pCurrentMeshObject->textures[1];  // Taylor Swift
+    //
 
 
     GLuint texture00Number = pTextureManager->getTextureIDFromName(texture0Name);
@@ -207,6 +233,16 @@ void DrawObject(cMeshObject* pCurrentMeshObject,
 
     // Do that for the other 6 textures... FUN!
 
+    //// Same for texture #7
+    //std::string texture7Name = pCurrentMeshObject->textures[7];
+    //GLuint texture07Number = pTextureManager->getTextureIDFromName(texture7Name);
+    //GLuint texture07Unit = 7;			// Texture unit go from 0 to 79
+    //glActiveTexture(texture07Unit + GL_TEXTURE0);	// GL_TEXTURE0 = 33984
+    //glBindTexture(GL_TEXTURE_2D, texture07Number);
+    //GLint texture7_UL = glGetUniformLocation(shaderID, "texture7");
+    //glUniform1i(texture7_UL, texture07Unit);
+
+
 
     // uniform vec4 texRatio_0_3;
     GLint texRatio_0_3 = glGetUniformLocation(shaderID, "texRatio_0_3");
@@ -215,6 +251,17 @@ void DrawObject(cMeshObject* pCurrentMeshObject,
                 pCurrentMeshObject->textureRatios[1],
                 pCurrentMeshObject->textureRatios[2],
                 pCurrentMeshObject->textureRatios[3]);
+
+
+    // The cube map textures
+    // uniform samplerCube skyboxTexture;
+    GLuint cubeMapTextureNumber = pTextureManager->getTextureIDFromName("TropicalSunnyDay");
+    GLuint texture30Unit = 30;			// Texture unit go from 0 to 79
+    glActiveTexture(texture30Unit + GL_TEXTURE0);	// GL_TEXTURE0 = 33984
+    glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTextureNumber);
+    GLint skyboxTexture_UL = glGetUniformLocation(shaderID, "skyboxTexture");
+    glUniform1i(skyboxTexture_UL, texture30Unit);
+
 
 
     // Choose the VAO that has the model we want to draw...
