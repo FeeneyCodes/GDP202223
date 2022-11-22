@@ -170,9 +170,9 @@ void main()
 	
 	
 // HACK: Apply the skybox to the object
-	vec3 cubeMapColour = texture( skyboxTexture, fNormal.xyz ).rgb;
-	pixelOutputColour.rgb *= 0.00001f;
-	pixelOutputColour.rgb += cubeMapColour.rgb;
+//	vec3 cubeMapColour = texture( skyboxTexture, fNormal.xyz ).rgb;
+//	pixelOutputColour.rgb *= 0.00001f;
+//	pixelOutputColour.rgb += cubeMapColour.rgb;
 	
 //	pixelOutputColour.rgb *= 0.0001;
 //	pixelOutputColour.rgb += materialColour.rgb;
