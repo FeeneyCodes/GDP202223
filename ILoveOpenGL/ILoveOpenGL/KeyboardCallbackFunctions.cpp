@@ -87,6 +87,9 @@ void key_callback(GLFWwindow* window,
         if (key == GLFW_KEY_T)     // Rotate one way
         {
             pDropShipEngine1->rotation.x += glm::radians(1.0f);
+//            pMediator->RecieveMessage("DropShip Rotate Engine 1", 0.1f);
+//            pMediator->RecieveMessage("DSRE1", 0.1f);
+//            pMediator->RecieveMessage(2536, 0.1f);
         }
         if (key == GLFW_KEY_Y)     // Rotate the other way
         {
