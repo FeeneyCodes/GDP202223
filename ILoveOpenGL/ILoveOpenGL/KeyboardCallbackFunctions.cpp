@@ -90,14 +90,19 @@ void key_callback(GLFWwindow* window,
     {
         if (key == GLFW_KEY_T)     // Rotate one way
         {
-            pDropShipEngine1->rotation.x += glm::radians(1.0f);
+//            pDropShipEngine1->rotation.x += glm::radians(1.0f);
+            // Now I'm using quaternions
+            pDropShipEngine1->adjustRoationAngleFromEuler(glm::vec3(glm::radians(1.0f), 0.0f, 0.0f) );
+
 //            pMediator->RecieveMessage("DropShip Rotate Engine 1", 0.1f);
 //            pMediator->RecieveMessage("DSRE1", 0.1f);
 //            pMediator->RecieveMessage(2536, 0.1f);
         }
         if (key == GLFW_KEY_Y)     // Rotate the other way
         {
-            pDropShipEngine1->rotation.x -= glm::radians(1.0f);
+//            pDropShipEngine1->rotation.x -= glm::radians(1.0f);
+            // Now I'm using quaternions
+            pDropShipEngine1->adjustRoationAngleFromEuler(glm::vec3(glm::radians(-1.0f), 0.0f, 0.0f));
         }
         
     }//if ( pDropShipEngine1 )

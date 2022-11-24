@@ -16,7 +16,7 @@ extern cLightManager* g_pTheLightManager;
 extern std::vector< cMeshObject* > vec_pMeshObjects;
 
 // Returns NULL if it didn't find anything
-cMeshObject* findObjectByFriendlyName(std::string name, 
+cMeshObject* findObjectByFriendlyName(std::string nameToFind,
 									  std::vector< cMeshObject* > vec_pMeshObjects,
 									  bool bSearchChildren = true);
 

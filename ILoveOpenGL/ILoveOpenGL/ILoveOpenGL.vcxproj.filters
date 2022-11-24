@@ -34,6 +34,9 @@
     <Filter Include="Textures">
       <UniqueIdentifier>{3b855b03-76cb-4146-8051-c8deb348ade7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Commands">
+      <UniqueIdentifier>{6ced567a-bff8-438f-b24f-fc412807456c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="theMainFunction.cpp">
@@ -90,6 +93,12 @@
     <ClCompile Include="DrawObject_function.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="cDropShipTakeOff_body.cpp">
+      <Filter>Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="cCommandScheduler.cpp">
+      <Filter>Commands</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cShaderManager.h">
@@ -130,6 +139,15 @@
     </ClInclude>
     <ClInclude Include="cBasicTextureManager\CTextureFromBMP.h">
       <Filter>Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="cCommand.h">
+      <Filter>Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="cDropShipTakeOff.h">
+      <Filter>Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="cCommandScheduler.h">
+      <Filter>Commands</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

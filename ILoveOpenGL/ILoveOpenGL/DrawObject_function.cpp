@@ -93,18 +93,21 @@ void DrawObject(cMeshObject* pCurrentMeshObject,
     glm::mat4 matTranslation = glm::translate(glm::mat4(1.0f),
                                               pCurrentMeshObject->position);
 
-    // Rotate the object
-    glm::mat4 matRoationZ = glm::rotate(glm::mat4(1.0f),
-                                        pCurrentMeshObject->rotation.z,                // Angle to rotate
-                                        glm::vec3(0.0f, 0.0f, 1.0f));       // Axis to rotate around
+//    // Rotate the object
+//    glm::mat4 matRoationZ = glm::rotate(glm::mat4(1.0f),
+//                                        pCurrentMeshObject->rotation.z,                // Angle to rotate
+//                                        glm::vec3(0.0f, 0.0f, 1.0f));       // Axis to rotate around
+//
+//    glm::mat4 matRoationY = glm::rotate(glm::mat4(1.0f),
+//                                        pCurrentMeshObject->rotation.y,                // Angle to rotate
+//                                        glm::vec3(0.0f, 1.0f, 0.0f));       // Axis to rotate around
+//
+//    glm::mat4 matRoationX = glm::rotate(glm::mat4(1.0f),
+//                                        pCurrentMeshObject->rotation.x,                // Angle to rotate
+//                                        glm::vec3(1.0f, 0.0f, 0.0f));       // Axis to rotate around
 
-    glm::mat4 matRoationY = glm::rotate(glm::mat4(1.0f),
-                                        pCurrentMeshObject->rotation.y,                // Angle to rotate
-                                        glm::vec3(0.0f, 1.0f, 0.0f));       // Axis to rotate around
+    glm::mat4 matQRotation = glm::mat4(pCurrentMeshObject->qRotation);
 
-    glm::mat4 matRoationX = glm::rotate(glm::mat4(1.0f),
-                                        pCurrentMeshObject->rotation.x,                // Angle to rotate
-                                        glm::vec3(1.0f, 0.0f, 0.0f));       // Axis to rotate around
 
     // Scale the object
 //    float uniformScale = pCurrentMeshObject->scale;
@@ -119,9 +122,12 @@ void DrawObject(cMeshObject* pCurrentMeshObject,
     // (or "world" matrix)
     matModel = matModel * matTranslation;
 
-    matModel = matModel * matRoationX;
-    matModel = matModel * matRoationY;
-    matModel = matModel * matRoationZ;
+//    matModel = matModel * matRoationX;
+//    matModel = matModel * matRoationY;
+//    matModel = matModel * matRoationZ;
+    matModel = matModel * matQRotation;
+
+//    matRotationFinal = matRoationX * matRoationY * matRoationZ;
 
     matModel = matModel * matScale;
 

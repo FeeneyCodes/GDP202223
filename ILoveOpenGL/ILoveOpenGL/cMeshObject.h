@@ -4,6 +4,8 @@
 #include <string>
 #include <glm/glm.hpp>
 #include <glm/vec3.hpp>
+// Quaternion stuff from glm
+#include <glm/gtx/quaternion.hpp>
 #include <vector>
 
 // This represents the location and orientation, etc. of 
@@ -20,7 +22,28 @@ public:
 	std::string friendlyName;
 
 	glm::vec3 position;     // 0,0,0 (origin)
-	glm::vec3 rotation;     // 0,0,0 ration around each Euler axis
+	// Euler angles
+	//glm::vec3 rotation;     // 0,0,0 ration around each Euler axis
+	
+	glm::quat qRotation;	// This ISN'T in Euler angles
+	// This OVERWRITES the current angle
+	void setRotationFromEuler( glm::vec3 newEulerAngleXYZ )
+	{
+		this->qRotation = glm::quat(newEulerAngleXYZ);
+	}
+	// This one updates ("adds") to the current angle
+	void adjustRoationAngleFromEuler( glm::vec3 EulerAngleXYZ_Adjust )
+	{
+		// To combine quaternion values, you multiply them together
+		// Make a quaternion that represents that CHANGE in angle
+		glm::quat qChange = glm::quat(EulerAngleXYZ_Adjust);
+		// Multiply them together to get the change
+		this->qRotation *= qChange;
+
+//		// This is the same as this
+//		this->qRotation = this->qRotation * qChange;
+	}
+
 //	float scale;
 	glm::vec3 scaleXYZ;
 	void SetUniformScale(float newScale)
@@ -51,6 +74,9 @@ public:
 
 	// Child meshes - move with the parent mesh
 	std::vector< cMeshObject* > vecChildMeshes;
+
+
+	cMeshObject* findObjectByFriendlyName(std::string name, bool bSearchChildren = true);
 
 };
 

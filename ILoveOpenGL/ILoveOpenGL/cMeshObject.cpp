@@ -15,7 +15,11 @@
 cMeshObject::cMeshObject()
 {
 	this->position = glm::vec3(0.0f);    
-	this->rotation = glm::vec3(0.0f);
+
+	//this->rotation = glm::vec3(0.0f);		// Euler angles
+	// Set rotation to 0 degrees around each axis
+	this->qRotation = glm::quat(glm::vec3(0.0f, 0.0f, 0.0f));
+
 	// RGB and "alpha" (A) 0.0f = transparent
 //	this->scale = 1.0f;
 	this->SetUniformScale(1.0f);
@@ -43,3 +47,29 @@ cMeshObject::cMeshObject()
 	this->textureRatios[7] = 0.0f;
 }	
 
+cMeshObject* cMeshObject::findObjectByFriendlyName(std::string nameToFind, bool bSearchChildren /*=true*/)
+{
+	for (std::vector< cMeshObject* >::iterator itCurrentMesh = this->vecChildMeshes.begin();
+	     itCurrentMesh != this->vecChildMeshes.end();
+		 itCurrentMesh++)
+	{
+		cMeshObject* pCurrentMesh = *itCurrentMesh;
+
+		if (pCurrentMesh->friendlyName == nameToFind)
+		{
+			// Early exit
+			return pCurrentMesh;
+		}
+
+		// Search children too? 
+		cMeshObject* pChildMesh = pCurrentMesh->findObjectByFriendlyName(nameToFind, bSearchChildren);
+
+		if (pChildMesh)       /* NULL = 0 = false) */
+		{
+			return pChildMesh;
+		}
+	}//for (std::vector< cMeshObject* >::iterator
+
+	// Didn't find it. How sad.
+	return NULL;
+}//cMeshObject* cMeshObject::findObjectByFriendlyName

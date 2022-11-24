@@ -713,7 +713,8 @@ int main( int argc, char* argv[] )
     pSubmarine->RGBA_colour.w = 0.5f;
     pSubmarine->position = glm::vec3(10.0f, 0.0f, 0.0f);
 //    pSubmarine->scale = 1.0f;
-    pSubmarine->rotation.y = glm::radians(-15.0f);
+//    pSubmarine->rotation.y = glm::radians(-15.0f);
+    pSubmarine->setRotationFromEuler( glm::vec3(0.0f, glm::radians(-15.0f), 0.0f) );
 
     cMeshObject* pYellowSubmarine = new cMeshObject();
     pYellowSubmarine->meshName = "Submarine";
@@ -809,7 +810,8 @@ int main( int argc, char* argv[] )
     pEngine_1_Thrust->textures[0] = "Long_blue_Jet_Flame.bmp";
     pEngine_1_Thrust->textureRatios[0] = 1.0f;
 
-    pEngine_1_Thrust->rotation.x = glm::radians(180.0f);
+//   pEngine_1_Thrust->rotation.x = glm::radians(180.0f);
+    pEngine_1_Thrust->setRotationFromEuler( glm::vec3(glm::radians(180.0f), 0.0f, 0.0f) );
 
     pEngine_1_Thrust->position.x = 1.2f;
     pEngine_1_Thrust->position.y = 0.1f;
@@ -1075,7 +1077,8 @@ int main( int argc, char* argv[] )
 
 
         // HACK: Rotate the drop ship
-        pDropShip->rotation.y += glm::radians(-0.01f);
+//        pDropShip->rotation.y += glm::radians(-0.01f);
+        pDropShip->adjustRoationAngleFromEuler( glm::vec3(0.0f, glm::radians(-0.01f), 0.0f) );
 
 //        pEngine_1_front_port_left->rotation.x += glm::radians(-0.025f);
 
