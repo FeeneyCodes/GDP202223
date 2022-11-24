@@ -729,8 +729,8 @@ int main( int argc, char* argv[] )
     pTerrain->bUse_RGBA_colour = false;      // Use file colours    pTerrain->RGBA_colour = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
     pTerrain->specular_colour_and_power
         = glm::vec4(1.0f, 1.0f, 1.0f, 1000.0f);
-    // Make it sort of transparent
-    pTerrain->RGBA_colour.w = 0.50f;
+    // Make it REALY transparent
+    pTerrain->RGBA_colour.w = 0.01f;
 //    pTerrain->position = glm::vec3(0.0f, 50.0f, -50.0f);
     pTerrain->position = glm::vec3(0.0f, -25.0f, -50.0f);
     pTerrain->isWireframe = false;
@@ -837,13 +837,22 @@ int main( int argc, char* argv[] )
 
 
 
+
+    cMeshObject* pSkyBox = new cMeshObject();
+    pSkyBox->meshName = "Skybox_Sphere";
+    pSkyBox->friendlyName = "skybox";
+    // I'm NOT going to add it to the list of objects to draw
+
+
+
+
     vec_pMeshObjects.push_back(pObjectToDraw);          // "MOTO"
     vec_pMeshObjects.push_back(pBunnyObjectToDraw1);    // "Bunny"
     vec_pMeshObjects.push_back(pBunnyObjectToDraw2);    // "Bunny"
     vec_pMeshObjects.push_back(pSpaceShip);    // "BirdOfPrey"
     vec_pMeshObjects.push_back(pSubmarine);    // "BirdOfPrey"
     vec_pMeshObjects.push_back(pYellowSubmarine);    // "BirdOfPrey"
-    vec_pMeshObjects.push_back(pTerrain);    // "BirdOfPrey"
+//    vec_pMeshObjects.push_back(pTerrain);    // "BirdOfPrey"
 
 
     // 
@@ -1160,6 +1169,36 @@ int main( int argc, char* argv[] )
 
 
         }//for ( unsigned int index
+
+
+
+        // Draw the skybox
+        {
+            GLint bIsSkyboxObject_UL = glGetUniformLocation(shaderID, "bIsSkyboxObject");
+            glUniform1f(bIsSkyboxObject_UL, (GLfloat) GL_TRUE);
+
+            glm::mat4x4 matModel = glm::mat4x4(1.0f);
+
+            // move skybox to the cameras location
+            pSkyBox->position = ::g_cameraEye;
+
+            // The scale of this large skybox needs to be smaller than the far plane
+            //  of the projection matrix.
+            // Maybe make it half the size
+            // Here, our far plane is 10000.0f...
+            pSkyBox->SetUniformScale(7500.0f);
+
+            // All the drawing code has been moved to the DrawObject function
+            DrawObject(pSkyBox,
+                        matModel,                
+                        shaderID, ::g_pTextureManager,
+                        pVAOManager, mModel_location, mModelInverseTransform_location);
+
+            // Turn this off
+            glUniform1f(bIsSkyboxObject_UL, (GLfloat) GL_FALSE);
+        }
+
+
         //    _____           _          __                           
         //   | ____|_ __   __| |   ___  / _|  ___  ___ ___ _ __   ___ 
         //   |  _| | '_ \ / _` |  / _ \| |_  / __|/ __/ _ \ '_ \ / _ \

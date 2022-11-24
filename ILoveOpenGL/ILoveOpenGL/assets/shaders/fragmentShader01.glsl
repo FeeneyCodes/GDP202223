@@ -28,6 +28,7 @@ uniform bool bIsFlameObject;
 uniform bool bUseDiscardTexture;
 
 
+
 //uniform vec4 diffuseColour;		// RGB + Alpha (w)
 uniform vec4 specularColour;			// RGB object hightlight COLOUR
 										// For most material, this is white (1,1,1)
@@ -58,6 +59,8 @@ uniform vec4 texRatio_0_3;		// x = texture0, y = texture1, etc. 0 to 1
 uniform vec4 texRatio_4_7;		// 0 to 1
 
 uniform samplerCube skyboxTexture;
+// When true, applies the skybox texture
+uniform bool bIsSkyboxObject;
 
 
 struct sLight
@@ -86,6 +89,16 @@ vec4 calculateLightContrib( vec3 vertexMaterialColour, vec3 vertexNormal,
 
 void main()
 {
+	
+	if (bIsSkyboxObject)
+	{
+		vec3 cubeMapColour = texture( skyboxTexture, fNormal.xyz ).rgb;
+		pixelOutputColour.rgb = cubeMapColour.rgb;
+		pixelOutputColour.a = 1.0f;
+		return;
+	}
+
+
 	vec3 materialColour = fColour.rgb;
 //	finalColour.r = 1.0f;
 
@@ -170,7 +183,21 @@ void main()
 	
 	
 // HACK: Apply the skybox to the object
-//	vec3 cubeMapColour = texture( skyboxTexture, fNormal.xyz ).rgb;
+//	vec3 STU_Vector = fNormal.xyz;
+
+//	// Make the objects 'reflective' (like a mirror)
+//	vec3 eyeVector = normalize(eyeLocation.xyz - fVertWorldLocation.xyz);
+//	// genType reflect(	genType IncidentVector, genType Normal);
+//	vec3 STU_Vector = reflect(eyeVector, fNormal.xyz);
+	
+//	// Make the objects 'refractive' (like a see through glass or water or diamond...)
+//	vec3 eyeVector = normalize(eyeLocation.xyz - fVertWorldLocation.xyz);
+//	// genType reflect(	genType IncidentVector, genType Normal);
+//	// (index of refraction for diamond is 2.417 according to wikipedia)
+//	// (index of refraction for water is 1.333 according to wikipedia)
+//	vec3 STU_Vector = refract(eyeVector, fNormal.xyz, 1.0f/2.417f);
+//	
+//	vec3 cubeMapColour = texture( skyboxTexture, STU_Vector.xyz ).rgb;
 //	pixelOutputColour.rgb *= 0.00001f;
 //	pixelOutputColour.rgb += cubeMapColour.rgb;
 	
