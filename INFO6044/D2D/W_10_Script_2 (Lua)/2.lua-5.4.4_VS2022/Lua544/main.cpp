@@ -17,6 +17,7 @@ extern "C" {
 lua_State* luaStart(void)
 {
     lua_State* L = luaL_newstate();		/* opens Lua 5.3.4 */
+
 	if ( L == NULL )
 	{	// Out of memory
 		return false;
