@@ -4,6 +4,7 @@
 
 struct sVec3
 {
+	sVec3() : x(0.0f), y(0.0f), z(0.0f) {}
 	float x, y, z;
 };
 
@@ -14,6 +15,8 @@ public:
 
 	std::string name;
 	sVec3 position;
+	sVec3 velocity;
+	float health;
 
 	unsigned int getID(void);
 private:

@@ -14,12 +14,18 @@ cLuaBrain::cLuaBrain()
 
 	luaL_openlibs(this->m_pLuaState);					/* Lua 5.3.3 */
 
-
+	// this is where you tell Lua what function to call when the script name is called
+	// Here, we set "setObjectState" to call the Lua_UpdateObject() function or static method
 	lua_pushcfunction( this->m_pLuaState, cLuaBrain::Lua_UpdateObject );
 	lua_setglobal( this->m_pLuaState, "setObjectState" );
 
+	// Same deal, but "getObjectState" calls Lua_GetObjectState();
 	lua_pushcfunction( this->m_pLuaState, cLuaBrain::Lua_GetObjectState );
 	lua_setglobal( this->m_pLuaState, "getObjectState" );
+
+	// 
+	lua_pushcfunction( this->m_pLuaState, cLuaBrain::Lua_UpdateObjectName );
+	lua_setglobal(this->m_pLuaState, "updateObjectName");
 
 	return;
 }
@@ -180,18 +186,13 @@ void cLuaBrain::RunScriptImmediately(std::string script)
 	}
 
 	// Object ID is valid
-	// Get the values that lua pushed and update object
-	//cPhysicalProperties physState;
-	//pGO->GetPhysState(physState);
 
-	//physState.position.x = (float)lua_tonumber(L, 2);	/* get argument */
-	//physState.position.y = (float)lua_tonumber(L, 3);	/* get argument */
-	//physState.position.z = (float)lua_tonumber(L, 4);	/* get argument */
-	//physState.velocity.x = (float)lua_tonumber(L, 5);	/* get argument */
-	//physState.velocity.y = (float)lua_tonumber(L, 6);	/* get argument */
-	//physState.velocity.z = (float)lua_tonumber(L, 7);	/* get argument */
-
-	//pGO->SetPhysState(physState);
+	pGO->position.x = (float)lua_tonumber(L, 2);	/* get argument */
+	pGO->position.y = (float)lua_tonumber(L, 3);	/* get argument */
+	pGO->position.z = (float)lua_tonumber(L, 4);	/* get argument */
+	pGO->velocity.x = (float)lua_tonumber(L, 5);	/* get argument */
+	pGO->velocity.y = (float)lua_tonumber(L, 6);	/* get argument */
+	pGO->velocity.z = (float)lua_tonumber(L, 7);	/* get argument */
 
 
 	lua_pushboolean( L, true );	// index is OK
@@ -215,21 +216,20 @@ void cLuaBrain::RunScriptImmediately(std::string script)
 	if ( pGO == nullptr )
 	{	// No, it's invalid
 		lua_pushboolean( L,  false );
+//		lua_pushstring(L, "Didn't work. So sorry");
 		// I pushed 1 thing on stack, so return 1;
 		return 1;	
 	}
 
 	// Object ID is valid
-	//cPhysicalProperties physState;
-	//pGO->GetPhysState(physState);
 
-	//lua_pushboolean( L, true );	// index is OK
-	//lua_pushnumber( L, physState.position.x );		
-	//lua_pushnumber( L, physState.position.y );		
-	//lua_pushnumber( L, physState.position.z );		
-	//lua_pushnumber( L, physState.velocity.x );		
-	//lua_pushnumber( L, physState.velocity.y );		
-	//lua_pushnumber( L, physState.velocity.z );		
+	lua_pushboolean( L, true );	// index is OK		// 1st item on stack
+	lua_pushnumber( L, pGO->position.x );			// 2nd item on stack
+	lua_pushnumber( L, pGO->position.y );			// 3rd item
+	lua_pushnumber( L, pGO->position.z );			// and so on
+	lua_pushnumber( L, pGO->velocity.x );
+	lua_pushnumber( L, pGO->velocity.y );
+	lua_pushnumber( L, pGO->velocity.z );
 	
 	return 7;		// There were 7 things on the stack
 }
@@ -277,4 +277,38 @@ std::string cLuaBrain::m_decodeLuaErrorToString( int error )
 
 	// Who knows what this error is?
 	return "Lua: UNKNOWN error";
+}
+
+
+//static 
+int cLuaBrain::Lua_UpdateObjectName(lua_State* L)
+{
+	std::cout << "UpdateObjectName() was called from calling updateObjectName() in Lua" << std::endl;
+
+	int objectID = (int)lua_tonumber(L, 1);	/* get argument */
+
+// Exist? 
+	cGameObject* pGO = cLuaBrain::m_findObjectByID(objectID);
+
+	if (pGO == nullptr)
+	{	// No, it's invalid
+		lua_pushboolean(L, false);
+		// I pushed 1 thing on stack, so return 1;
+		return 1;
+	}
+
+	// Get the 2nd thing, which is a string.
+	// Note that Lua has char arrays, not std::strings
+	// Returns a POINTER to a string array
+	// Warning: DON'T KEEP THIS AROUND
+	char* newName = (char*)lua_tostring(L, 2);
+
+	std::string strNewName;	
+	strNewName.append(newName);		// Copies the string array to a nice string
+
+	pGO->name = strNewName;
+
+
+	// Nothing is on the stack, so return 0
+	return 0;
 }

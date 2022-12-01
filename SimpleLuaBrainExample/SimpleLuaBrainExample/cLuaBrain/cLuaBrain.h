@@ -39,6 +39,7 @@ public:
 	// - position (xyz)
 	// - velocity (xyz)
 	// called "setObjectState" in lua
+	// Something like this: "setObjectState( 24, 0, 0, 0, 0, 0, 0 )"
 	static int Lua_UpdateObject( lua_State *L );
 	// Passes object ID
 	// Returns valid (true or false)
@@ -46,6 +47,13 @@ public:
 	// - velocity (xyz)
 	// called "getObjectState" in lua
 	static int Lua_GetObjectState( lua_State *L );
+//	"lauchDropShip()"
+//	static int Lua_DropShipLaunch(lua_State* L);
+
+	// Update Object's name
+	// Lua script name is "updateObjectName"
+	// Example: updateObjectName( ID, newName );
+	static int Lua_UpdateObjectName( lua_State* L );
 
 private:
 	std::map< std::string /*scriptName*/, 
