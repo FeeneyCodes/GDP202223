@@ -140,6 +140,7 @@
     <ClCompile Include="cBasicTextureManager\C24BitBMPpixel.cpp" />
     <ClCompile Include="cBasicTextureManager\cBasicTextureManager.cpp" />
     <ClCompile Include="cBasicTextureManager\CTextureFromBMP.cpp" />
+    <ClCompile Include="cCommandGroup.cpp" />
     <ClCompile Include="cCommandScheduler.cpp" />
     <ClCompile Include="cDropShipTakeOff_body.cpp" />
     <ClCompile Include="cLight.cpp" />

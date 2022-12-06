@@ -34,4 +34,6 @@ assets/models/Imposter_Shapes/Quad_x3_2_sided_axial_imposter_base_on_XY_axis.ply
 Quad_x3_2_sided_axial_imposter_base_on_XY_axis
 assets/models/UV_Sphere_for_Skybox_inverted_Normals_xyz_uv_n_rgba.ply
 Skybox_Sphere
+assets/models/island_seed_6977_output_xyz_n_rgba_uv.ply
+fractal_island
 EOF

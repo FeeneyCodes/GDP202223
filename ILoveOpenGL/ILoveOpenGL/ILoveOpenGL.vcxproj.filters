@@ -99,6 +99,9 @@
     <ClCompile Include="cCommandScheduler.cpp">
       <Filter>Commands</Filter>
     </ClCompile>
+    <ClCompile Include="cCommandGroup.cpp">
+      <Filter>Commands</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cShaderManager.h">

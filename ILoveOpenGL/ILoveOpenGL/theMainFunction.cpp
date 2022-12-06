@@ -47,7 +47,7 @@
 
 
 // glm::vec3 g_cameraEye = glm::vec3(0.0, 100.0, -300.0f);
-glm::vec3 g_cameraEye = glm::vec3(0.0, 2.0, 8.0f);
+glm::vec3 g_cameraEye = glm::vec3(0.0, 2.0, -100.0f);
 glm::vec3 g_cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
 
 cBasicTextureManager* g_pTextureManager = NULL;
@@ -480,7 +480,36 @@ int main( int argc, char* argv[] )
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
-    window = glfwCreateWindow(640, 480, "Hello Kitty", NULL, NULL);
+    //window = glfwCreateWindow(640, 480, "Hello Kitty", NULL, NULL);
+    //if (!window)
+    //{
+    //    glfwTerminate();
+    //    exit(EXIT_FAILURE);
+    //}
+
+    //std::cout << "Window created." << std::endl;
+
+    // Full screen:
+    //window = glfwCreateWindow(640, 480, "Hello Kitty", glfwGetPrimaryMonitor(), NULL);
+    //if (!window)
+    //{
+    //    glfwTerminate();
+    //    exit(EXIT_FAILURE);
+    //}
+
+    //std::cout << "Window created." << std::endl;
+
+
+     // Full screen:
+    GLFWmonitor* pMainScreen = glfwGetPrimaryMonitor();
+    const GLFWvidmode* mode = glfwGetVideoMode(pMainScreen);
+
+    glfwWindowHint(GLFW_RED_BITS, mode->redBits);
+    glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
+    glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
+    glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
+
+    window = glfwCreateWindow(mode->width, mode->height, "Hello Kitty", pMainScreen, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -745,6 +774,7 @@ int main( int argc, char* argv[] )
 
 
 
+
     // Drop ship and "child" parts
     cMeshObject* pDropShip = new cMeshObject();
     pDropShip->meshName = "DropShip_Hull";
@@ -847,6 +877,16 @@ int main( int argc, char* argv[] )
 
 
 
+        // ISLAND Terrain (final exam 2021 example)
+    cMeshObject* pIslandTerrain = new cMeshObject();
+    pIslandTerrain->meshName = "fractal_island";     //  "Terrain";
+    pIslandTerrain->friendlyName = "island";
+    pIslandTerrain->position = glm::vec3(0.0f, -25.0f, 0.0f);
+    pIslandTerrain->isWireframe = false;
+
+
+
+
 
     vec_pMeshObjects.push_back(pObjectToDraw);          // "MOTO"
     vec_pMeshObjects.push_back(pBunnyObjectToDraw1);    // "Bunny"
@@ -855,6 +895,7 @@ int main( int argc, char* argv[] )
     vec_pMeshObjects.push_back(pSubmarine);    // "BirdOfPrey"
     vec_pMeshObjects.push_back(pYellowSubmarine);    // "BirdOfPrey"
 //    vec_pMeshObjects.push_back(pTerrain);    // "BirdOfPrey"
+//    vec_pMeshObjects.push_back(pIslandTerrain);
 
 
     // 
@@ -1173,6 +1214,21 @@ int main( int argc, char* argv[] )
 
         }//for ( unsigned int index
 
+
+
+        // Draw the island model
+        GLint bIsIlandModel_IniformLocation = glGetUniformLocation(shaderID, "bIsIlandModel");
+        glUniform1f(bIsIlandModel_IniformLocation, (GLfloat)GL_TRUE);
+
+        glm::mat4x4 matModel = glm::mat4x4(1.0f);
+
+        // All the drawing code has been moved to the DrawObject function
+        DrawObject(pIslandTerrain,
+                   matModel,
+                   shaderID, ::g_pTextureManager,
+                   pVAOManager, mModel_location, mModelInverseTransform_location);
+
+        glUniform1f(bIsIlandModel_IniformLocation, (GLfloat)GL_FALSE);
 
 
         // Draw the skybox

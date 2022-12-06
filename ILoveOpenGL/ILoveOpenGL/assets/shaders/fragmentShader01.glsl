@@ -29,6 +29,7 @@ uniform bool bUseDiscardTexture;
 
 
 
+
 //uniform vec4 diffuseColour;		// RGB + Alpha (w)
 uniform vec4 specularColour;			// RGB object hightlight COLOUR
 										// For most material, this is white (1,1,1)
@@ -61,6 +62,9 @@ uniform vec4 texRatio_4_7;		// 0 to 1
 uniform samplerCube skyboxTexture;
 // When true, applies the skybox texture
 uniform bool bIsSkyboxObject;
+
+// HACK: colour the island
+uniform bool bIsIlandModel;
 
 
 struct sLight
@@ -98,6 +102,31 @@ void main()
 		return;
 	}
 
+
+	if ( bIsIlandModel )
+	{
+	
+		if ( fVertWorldLocation.y < -25.0f )
+		{	// Water
+			pixelOutputColour.rgb = vec3(0.0f, 0.0f, 1.0f);
+		}
+		else if ( fVertWorldLocation.y < -15.0f )
+		{	// Sand ( 89.8% red, 66.67% green and 43.92% )
+			pixelOutputColour.rgb = vec3(0.898f, 0.6667f, 0.4392f);
+		}
+		else if ( fVertWorldLocation.y < 30.0f )
+		{	// Grass
+			pixelOutputColour.rgb = vec3(0.0f, 1.0f, 0.0f);
+		}
+		else
+		{	// Snow
+			pixelOutputColour.rgb = vec3(1.0f, 1.0f, 1.0f);
+		}
+		pixelOutputColour.a = 1.0f;
+	
+	
+		return;
+	}
 
 	vec3 materialColour = fColour.rgb;
 //	finalColour.r = 1.0f;
