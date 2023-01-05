@@ -2,7 +2,9 @@
 #include <string>
 #include <iostream>
 
-#include "cSmartArray.h"
+//#include "cSmartArray.h"
+#include "cSmartArray2.h"
+//#include "cTSmartArray.h"
 
 void AAAAAH(void);
 
@@ -11,12 +13,15 @@ int main()
 
 //	AAAAAH();
 
-	std::ifstream nameFile("dist.female.first.txt");
+//	std::ifstream nameFile("dist.female.first.txt");
+	std::ifstream nameFile("US_LastNames.txt");
 
 	// Read each name and save in a smart array
 	std::string tempName;
 
-	cSmartArray saNames;
+//	cSmartArray saNames;
+//	cTSmartArray<std::string> saNames;
+	cSmartArray2 saNames;
 
 	// MARY    2.629    2.629     1
 	while ( nameFile >> tempName )
@@ -38,8 +43,8 @@ int main()
 
 	saNames.InsertAtIndex(999, "Lord Voldemort!");
 
-//	for ( unsigned int index = 0; index != saNames.getSize(); index++ )
-	for ( unsigned int index = 990; index != 1010; index++ )
+	for ( unsigned int index = 0; index != saNames.getSize(); index++ )
+//	for ( unsigned int index = 990; index != 1010; index++ )
 	{
 		std::cout
 			<< index << " : "
@@ -58,6 +63,14 @@ void AAAAAH(void)
 	std::vector<std::string> myVector;
 	myVector.push_back("Michael");
 	myVector.push_back("Robin");
+
+	//std::string myArray[1000000];
+	//myVector.reserve(1000000);
+	//for ( unsigned int count = 0; count != 1000000; count++ )
+	//{
+	//	myVector.push_back("");
+	//}
+
 
 //	myVector.insert(myVector.begin()+1, "Fraser");
 

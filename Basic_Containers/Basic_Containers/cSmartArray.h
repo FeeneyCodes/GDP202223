@@ -11,7 +11,6 @@ public:
 	void InsertAtEnd(std::string newItem);		// push_back
 	void InsertAtIndex(int index, std::string newItem);
 
-
 	unsigned int getSize(void);
 
 	// Operator overloading the "[]" operator

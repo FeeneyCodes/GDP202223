@@ -21,9 +21,18 @@
     <ClCompile Include="cSmartArray.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="cSmartArray2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cSmartArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cSmartArray2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cTSmartArray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
