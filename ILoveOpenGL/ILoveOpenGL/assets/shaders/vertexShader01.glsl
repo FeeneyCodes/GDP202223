@@ -15,13 +15,13 @@ in vec4 vBiNormal;			// For bump mapping
 in vec4 vBoneID;			// For skinned mesh (FBX)
 in vec4 vBoneWeight;		// For skinned mesh (FBX)
 
-// Going "out" to the fragment shader
-out vec4 fColour;		// colour;			
-out vec4 fNormal;
-out vec4 fVertWorldLocation;	// using only matModel
-out vec4 fUVx2;
-out vec4 fTangent;
-out vec4 fBinormal;
+// Going "out" to the GEOMETRY shader, now (was going to the fragment)
+out vec4 gColour;		// colour;			
+out vec4 gNormal;
+out vec4 gVertWorldLocation;	// using only matModel
+out vec4 gUVx2;
+out vec4 gTangent;
+out vec4 gBinormal;
 
 //uniform mat4 MVP;
 uniform mat4 mModel;

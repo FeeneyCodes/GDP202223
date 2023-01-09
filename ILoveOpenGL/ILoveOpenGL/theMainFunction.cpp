@@ -509,7 +509,8 @@ int main( int argc, char* argv[] )
     glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
     glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
 
-    window = glfwCreateWindow(mode->width, mode->height, "Hello Kitty", pMainScreen, NULL);
+//    window = glfwCreateWindow(mode->width, mode->height, "Hello Kitty", pMainScreen, NULL);
+    window = glfwCreateWindow(1200, 800, "Hello Kitty", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
