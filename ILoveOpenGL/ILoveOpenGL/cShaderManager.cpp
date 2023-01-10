@@ -8,6 +8,7 @@
 
 #include <algorithm>		// for the std::copy
 #include <iterator>			// for the back_inserter
+#include <iostream>
 
 cShaderManager::cShaderManager()
 {
@@ -291,6 +292,7 @@ bool cShaderManager::createProgramFromFile(
 	{
 		return false;
 	}//if ( ! this->m_loadSourceFromFile(...
+	std::cout << "Vertex shader >" << vertexShad.fileName << "< loaded OK." << std::endl;
 
 	errorText = "";
 	if ( ! this->m_compileShaderFromSource( vertexShad, errorText ) )
@@ -298,6 +300,7 @@ bool cShaderManager::createProgramFromFile(
 		this->m_lastError = errorText;
 		return false;
 	}//if ( this->m_compileShaderFromSource(...
+	std::cout << "Vertex shader >" << vertexShad.fileName << "< compiled OK." << std::endl;
 
 
 
@@ -307,12 +310,14 @@ bool cShaderManager::createProgramFromFile(
 	{
 		return false;
 	}//if ( ! this->m_loadSourceFromFile(...
+	std::cout << "Fragment shader >" << fragShader.fileName << "< loaded OK." << std::endl;
 
 	if ( ! this->m_compileShaderFromSource( fragShader, errorText ) )
 	{
 		this->m_lastError = errorText;
 		return false;
 	}//if ( this->m_compileShaderFromSource(...
+	std::cout << "Fragment shader >" << fragShader.fileName << "< compiled OK." << std::endl;
 
 
 	cShaderProgram curProgram;
@@ -325,6 +330,113 @@ bool cShaderManager::createProgramFromFile(
 	// Was there a link error? 
 	errorText = "";
 	if ( this->m_wasThereALinkError( curProgram.ID, errorText ) )
+	{
+		std::stringstream ssError;
+		ssError << "Shader program link error: ";
+		ssError << errorText;
+		this->m_lastError = ssError.str();
+		return false;
+	}
+
+	// At this point, shaders are compiled and linked into a program
+
+	curProgram.friendlyName = friendlyName;
+
+	// Add the shader to the map
+	this->m_ID_to_Shader[curProgram.ID] = curProgram;
+	// Save to other map, too
+	this->m_name_to_ID[curProgram.friendlyName] = curProgram.ID;
+
+	return true;
+}
+
+
+
+bool cShaderManager::createProgramFromFile(
+				std::string friendlyName,
+				cShader& vertexShad,
+				cShader& geometryShad,
+				cShader& fragShader,
+				bool showProgressOnCOUT /*=true*/)
+{
+	std::string errorText = "";
+
+	// *************************************************************
+	// VERTEX SHADER
+	// Shader loading happening before vertex buffer array
+	vertexShad.ID = glCreateShader(GL_VERTEX_SHADER);
+	vertexShad.shaderType = cShader::VERTEX_SHADER;
+	//  char* vertex_shader_text = "wewherlkherlkh";
+	// Load some text from a file...
+	if (!this->m_loadSourceFromFile(vertexShad))
+	{
+		return false;
+	}//if ( ! this->m_loadSourceFromFile(...
+	std::cout << "Vertex shader >" << vertexShad.fileName << "< loaded OK." << std::endl;
+
+	errorText = "";
+	if (!this->m_compileShaderFromSource(vertexShad, errorText))
+	{
+		this->m_lastError = errorText;
+		return false;
+	}//if ( this->m_compileShaderFromSource(...
+	std::cout << "Vertex shader >" << vertexShad.fileName << "< compiled OK." << std::endl;
+	// *************************************************************
+
+	// *************************************************************
+	// GEOMETRY SHADER
+	// Shader loading happening before vertex buffer array
+	geometryShad.ID = glCreateShader(GL_GEOMETRY_SHADER);
+	geometryShad.shaderType = cShader::GEOMETRY_SHADER;
+	//  char* vertex_shader_text = "wewherlkherlkh";
+	// Load some text from a file...
+	if (!this->m_loadSourceFromFile(geometryShad))
+	{
+		return false;
+	}//if ( ! this->m_loadSourceFromFile(...
+	std::cout << "Fragment shader >" << fragShader.fileName << "< loaded OK." << std::endl;
+
+	errorText = "";
+	if (!this->m_compileShaderFromSource(geometryShad, errorText))
+	{
+		this->m_lastError = errorText;
+		return false;
+	}//if ( this->m_compileShaderFromSource(...
+	std::cout << "Fragment shader >" << fragShader.fileName << "< compiled OK." << std::endl;
+	// *************************************************************
+
+
+	// *************************************************************
+	// FRAGMENT shader
+	fragShader.ID = glCreateShader(GL_FRAGMENT_SHADER);
+	fragShader.shaderType = cShader::FRAGMENT_SHADER;
+	if (!this->m_loadSourceFromFile(fragShader))
+	{
+		return false;
+	}//if ( ! this->m_loadSourceFromFile(...
+	std::cout << "Geometry shader >" << geometryShad.fileName << "< loaded OK." << std::endl;
+
+	if (!this->m_compileShaderFromSource(fragShader, errorText))
+	{
+		this->m_lastError = errorText;
+		return false;
+	}//if ( this->m_compileShaderFromSource(...
+	std::cout << "Geometry shader >" << geometryShad.fileName << "< compiled OK." << std::endl;
+	// *************************************************************
+
+
+
+	cShaderProgram curProgram;
+	curProgram.ID = glCreateProgram();
+
+	glAttachShader(curProgram.ID, vertexShad.ID);
+	glAttachShader(curProgram.ID, geometryShad.ID);
+	glAttachShader(curProgram.ID, fragShader.ID);
+	glLinkProgram(curProgram.ID);
+
+	// Was there a link error? 
+	errorText = "";
+	if (this->m_wasThereALinkError(curProgram.ID, errorText))
 	{
 		std::stringstream ssError;
 		ssError << "Shader program link error: ";

@@ -16,6 +16,7 @@ public:
 		{
 			VERTEX_SHADER,
 			FRAGMENT_SHADER,
+			GEOMETRY_SHADER,
 			UNKNOWN
 		};
 		eShaderType shaderType;
@@ -54,6 +55,13 @@ public:
 	bool createProgramFromFile( std::string friendlyName, 
 		                        cShader &vertexShad, 
 					            cShader &fragShader );
+	// Now with geometry shader, too
+	bool createProgramFromFile( std::string friendlyName, 
+		                        cShader &vertexShad, 
+		                        cShader &geometryShad, 
+					            cShader &fragShader, 
+							    bool showProgressOnCOUT = true);
+
 	void setBasePath( std::string basepath );
 	unsigned int getIDFromFriendlyName( std::string friendlyName );
 

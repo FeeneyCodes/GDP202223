@@ -561,12 +561,17 @@ int main( int argc, char* argv[] )
     cShaderManager* pTheShaderManager = new cShaderManager();
 
     cShaderManager::cShader vertexShader01;
+    cShaderManager::cShader geometryShader01;
     cShaderManager::cShader fragmentShader01;
 
     vertexShader01.fileName = "assets/shaders/vertexShader01.glsl";
+//    geometryShader01.fileName = "assets/shaders/geomShader_tri-tri_PassThrough.glsl";
+//    geometryShader01.fileName = "assets/shaders/geomShader_tri-tri_addNormals.glsl";
+    geometryShader01.fileName = "assets/shaders/geomShader_tri-tri_addNormals_02.glsl";
     fragmentShader01.fileName = "assets/shaders/fragmentShader01.glsl";
 
-    if ( ! pTheShaderManager->createProgramFromFile("Shader_1", vertexShader01, fragmentShader01) )
+//    if ( ! pTheShaderManager->createProgramFromFile("Shader_1", vertexShader01, fragmentShader01) )
+    if ( ! pTheShaderManager->createProgramFromFile("Shader_1", vertexShader01, geometryShader01, fragmentShader01) )
     {
         std::cout << "Didn't compile shaders" << std::endl;
         std::string theLastError = pTheShaderManager->getLastError();

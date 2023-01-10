@@ -42,19 +42,19 @@ void main()
 	
 	// The location of the vertex in WORLD SPACE 
 	// for the lighting
-	fVertWorldLocation.xyz = (mModel * vec4(vertPosition, 1.0f)).xyz;
-	fVertWorldLocation.w = 1.0f;
+	gVertWorldLocation.xyz = (mModel * vec4(vertPosition, 1.0f)).xyz;
+	gVertWorldLocation.w = 1.0f;
 	
 	// Send the normals to the fragment shader
 	// Rotate the normal if the model is rotated
-	fNormal.xyz = normalize(mModelInverseTranspose * vec4(vNormal.xyz, 1.0f)).xyz;
-	fNormal.w = 1.0f;
+	gNormal.xyz = normalize(mModelInverseTranspose * vec4(vNormal.xyz, 1.0f)).xyz;
+	gNormal.w = 1.0f;
 	
 	// Copy the rest of the values to the fragment shader
-	fColour = vColour;
-	fUVx2 = vUVx2;
-	fTangent = vTangent;
-	fBinormal = vBiNormal;
+	gColour = vColour;
+	gUVx2 = vUVx2;
+	gTangent = vTangent;
+	gBinormal = vBiNormal;
 }
 
 
