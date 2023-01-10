@@ -143,6 +143,7 @@
     <ClCompile Include="cCommandGroup.cpp" />
     <ClCompile Include="cCommandScheduler.cpp" />
     <ClCompile Include="cDropShipTakeOff_body.cpp" />
+    <ClCompile Include="cFBO.cpp" />
     <ClCompile Include="cLight.cpp" />
     <ClCompile Include="cLightHelper.cpp" />
     <ClCompile Include="cLightManager.cpp" />
@@ -170,6 +171,7 @@
     <ClInclude Include="cCommand.h" />
     <ClInclude Include="cCommandScheduler.h" />
     <ClInclude Include="cDropShipTakeOff.h" />
+    <ClInclude Include="cFBO.h" />
     <ClInclude Include="cLight.h" />
     <ClInclude Include="cLightHelper.h" />
     <ClInclude Include="cLightManager.h" />

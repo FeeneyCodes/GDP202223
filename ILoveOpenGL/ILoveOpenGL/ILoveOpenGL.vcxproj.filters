@@ -37,6 +37,9 @@
     <Filter Include="Commands">
       <UniqueIdentifier>{6ced567a-bff8-438f-b24f-fc412807456c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="FBO">
+      <UniqueIdentifier>{f3e0e481-1bdc-4319-8255-65475bfe61ea}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="theMainFunction.cpp">
@@ -102,6 +105,9 @@
     <ClCompile Include="cCommandGroup.cpp">
       <Filter>Commands</Filter>
     </ClCompile>
+    <ClCompile Include="cFBO.cpp">
+      <Filter>FBO</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cShaderManager.h">
@@ -151,6 +157,9 @@
     </ClInclude>
     <ClInclude Include="cCommandScheduler.h">
       <Filter>Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="cFBO.h">
+      <Filter>FBO</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

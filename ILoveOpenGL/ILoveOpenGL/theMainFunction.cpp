@@ -31,6 +31,8 @@
 
 #include "cBasicTextureManager/cBasicTextureManager.h"
 
+#include "cFBO.h"
+
 
 
 //sVertex_XYZ_RGB vertices[] =
@@ -538,7 +540,18 @@ int main( int argc, char* argv[] )
     //std::cout << pZ; 
 
 
+    // Frame Buffer Object
+    cFBO* p_FBO_01 = new cFBO();
 
+    std::string FBOErrorString;
+    if ( ! p_FBO_01->init(640, 480, FBOErrorString) )
+    {
+        std::cout << "FBO error " << FBOErrorString << std::endl;
+    }
+    else
+    {
+        std::cout << "FBO created OK." << std::endl;
+    }
 
 
 //    // Defining the 3D model that we are going to draw. 
@@ -1182,6 +1195,12 @@ int main( int argc, char* argv[] )
         glUniformMatrix4fv(mView_location, 1, GL_FALSE, glm::value_ptr(matView));
         glUniformMatrix4fv(mProjection_location, 1, GL_FALSE, glm::value_ptr(matProjection));
 
+
+        // redirect the output to the frame buffer
+        glBindFramebuffer(GL_FRAMEBUFFER, p_FBO_01->ID);
+
+        // Points the output to the default frame buffer
+//        glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 
         //    ____  _             _            __                           
