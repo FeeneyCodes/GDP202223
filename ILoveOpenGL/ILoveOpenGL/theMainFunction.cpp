@@ -1291,6 +1291,12 @@ int main( int argc, char* argv[] )
         //                                                            
 
 
+        // Point the framebuffer to the default one
+        // Draw a single quad or triangle that has the framebuffer as it's texture
+ //       DrawObject(theQuad);
+
+
+
         glfwSwapBuffers(window);
         glfwPollEvents();
         
